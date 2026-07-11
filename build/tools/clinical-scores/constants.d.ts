@@ -1,5 +1,4 @@
 export declare const UREA_TO_BUN_CONVERSION = 2.8;
-export declare const UREA_MMOL_THRESHOLD = 40;
 export declare const BUN_MG_DL_THRESHOLD = 19;
 export declare const CURB65_RESPIRATORY_RATE_THRESHOLD = 30;
 export declare const CURB65_SYSTOLIC_BP_THRESHOLD = 90;
@@ -25,7 +24,6 @@ export declare const GLASGOW_BUN_THRESHOLD_HIGH = 70;
 export declare const GLASGOW_BUN_THRESHOLD_MEDIUM_HIGH = 28;
 export declare const GLASGOW_BUN_THRESHOLD_MEDIUM = 22.4;
 export declare const GLASGOW_BUN_THRESHOLD_LOW = 18.2;
-export declare const GLASGOW_UREA_MMOL_THRESHOLD = 50;
 export declare const GLASGOW_HGB_THRESHOLD_LOW = 10;
 export declare const GLASGOW_HGB_THRESHOLD_MEDIUM_MALE = 12;
 export declare const GLASGOW_HGB_THRESHOLD_HIGH_MALE = 13;

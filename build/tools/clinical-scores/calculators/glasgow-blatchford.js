@@ -1,10 +1,10 @@
-import { getRiskGuidance, convertUreaToBUN } from '../utils.js';
+import { getRiskGuidance, ureaToBUN } from '../utils.js';
 import { GLASGOW_BUN_THRESHOLD_HIGH, GLASGOW_BUN_THRESHOLD_MEDIUM_HIGH, GLASGOW_BUN_THRESHOLD_MEDIUM, GLASGOW_BUN_THRESHOLD_LOW, GLASGOW_HGB_THRESHOLD_LOW, GLASGOW_HGB_THRESHOLD_MEDIUM_MALE, GLASGOW_HGB_THRESHOLD_HIGH_MALE, GLASGOW_BP_THRESHOLD_LOW, GLASGOW_BP_THRESHOLD_MEDIUM, GLASGOW_BP_THRESHOLD_HIGH, GLASGOW_PULSE_THRESHOLD, } from '../constants.js';
 export function calculateGlasgowBlatchford(inputs) {
     let score = 0;
     const details = [];
-    if (inputs.bun !== undefined) {
-        const bunMgDl = convertUreaToBUN(inputs.bun);
+    if (inputs.bun !== undefined && inputs.bunUnit !== undefined) {
+        const bunMgDl = ureaToBUN(inputs.bun, inputs.bunUnit);
         if (bunMgDl >= GLASGOW_BUN_THRESHOLD_HIGH) {
             score += 6;
             details.push(`BUN ≥${GLASGOW_BUN_THRESHOLD_HIGH} mg/dL: +6`);

@@ -1,13 +1,17 @@
 import { z } from 'zod';
 export const CURB65InputSchema = z.object({
     confusion: z.boolean().describe('New onset confusion or altered mental status'),
-    urea: z.number().optional().describe('Blood urea nitrogen (BUN) in mg/dL, or urea in mmol/L'),
+    urea: z.number().optional().describe('Blood urea value. REQUIRES ureaUnit — this field is not interpreted without it. US labs report BUN in mg/dL; most other countries report urea in mmol/L.'),
+    ureaUnit: z.enum(['mg/dL', 'mmol/L']).optional().describe('Unit of the urea field. mg/dL = US BUN; mmol/L = international urea. Must be provided whenever urea is provided; the value is never unit-inferred.'),
     respiratoryRate: z.number().min(0).max(100).describe('Respiratory rate (breaths per minute)'),
     bloodPressure: z.object({
         systolic: z.number().min(0).max(300).describe('Systolic blood pressure in mmHg'),
         diastolic: z.number().min(0).max(200).describe('Diastolic blood pressure in mmHg'),
     }).describe('Blood pressure measurement'),
     age: z.number().min(0).max(120).describe('Patient age in years'),
+}).refine((v) => v.urea === undefined || v.ureaUnit !== undefined, {
+    message: 'ureaUnit is required when urea is provided (specify "mg/dL" for US BUN or "mmol/L" for international urea) — the unit is never guessed',
+    path: ['ureaUnit'],
 });
 export const CentorInputSchema = z.object({
     fever: z.boolean().describe('Temperature > 38°C (100.4°F)'),
@@ -75,7 +79,8 @@ export const AlvaradoInputSchema = z.object({
     migrationPain: z.boolean().describe('Migration of pain from periumbilical area to right lower quadrant'),
 });
 export const GlasgowBlatchfordInputSchema = z.object({
-    bun: z.number().optional().describe('Blood urea nitrogen (BUN) in mg/dL, or urea in mmol/L'),
+    bun: z.number().optional().describe('Blood urea value. REQUIRES bunUnit — this field is not interpreted without it. US labs report BUN in mg/dL; most other countries report urea in mmol/L.'),
+    bunUnit: z.enum(['mg/dL', 'mmol/L']).optional().describe('Unit of the bun field. mg/dL = US BUN; mmol/L = international urea. Must be provided whenever bun is provided; the value is never unit-inferred.'),
     hemoglobin: z.number().describe('Hemoglobin in g/dL'),
     systolicBloodPressure: z.number().min(0).max(300).describe('Systolic blood pressure in mmHg'),
     pulse: z.number().min(0).max(300).describe('Heart rate in beats per minute'),
@@ -84,6 +89,9 @@ export const GlasgowBlatchfordInputSchema = z.object({
     hepaticDisease: z.boolean().describe('History of hepatic disease (cirrhosis, chronic liver disease)'),
     cardiacFailure: z.boolean().describe('History of cardiac failure'),
     sex: z.enum(['male', 'female']).describe('Biological sex (affects hemoglobin scoring)'),
+}).refine((v) => v.bun === undefined || v.bunUnit !== undefined, {
+    message: 'bunUnit is required when bun is provided (specify "mg/dL" for US BUN or "mmol/L" for international urea) — the unit is never guessed',
+    path: ['bunUnit'],
 });
 export const NIHSSInputSchema = z.object({
     levelOfConsciousness: z.enum(['alert', 'arouses_minor', 'arouses_repeated', 'coma']).describe('1a. Level of consciousness: alert (0pts) - alert and responsive; arouses_minor (1pt) - arousable with minor stimulation; arouses_repeated (2pts) - arousable only with repeated or painful stimulation; coma (3pts) - unresponsive or only reflex responses'),

@@ -1,9 +1,12 @@
-import { UREA_TO_BUN_CONVERSION, UREA_MMOL_THRESHOLD } from './constants.js';
+import { UREA_TO_BUN_CONVERSION } from './constants.js';
 import { CLINICAL_GUIDANCE } from './guidance.js';
 import { SOFA_URINE_OUTPUT_THRESHOLD_CRITICAL, SOFA_URINE_OUTPUT_THRESHOLD_SEVERE, SOFA_CREATININE_THRESHOLD_CRITICAL, SOFA_CREATININE_THRESHOLD_SEVERE, SOFA_CREATININE_THRESHOLD_MODERATE, SOFA_CREATININE_THRESHOLD_MILD, } from './constants.js';
-export const convertUreaToBUN = (urea) => {
-    const isLikelyMmol = urea <= UREA_MMOL_THRESHOLD;
-    return isLikelyMmol ? urea * UREA_TO_BUN_CONVERSION : urea;
+// Convert a blood-urea value to BUN in mg/dL using the caller-stated unit.
+// We never infer the unit from the magnitude — a US BUN in mg/dL and an
+// international urea in mmol/L overlap in range, so guessing silently corrupts
+// the score. The unit is required at the schema layer; this is a total function.
+export const ureaToBUN = (value, unit) => {
+    return unit === 'mmol/L' ? value * UREA_TO_BUN_CONVERSION : value;
 };
 export const normalizeFiO2 = (fio2) => {
     return fio2 > 1 ? fio2 / 100 : fio2;

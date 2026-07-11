@@ -1,7 +1,8 @@
 import { z } from 'zod';
-export declare const CURB65InputSchema: z.ZodObject<{
+export declare const CURB65InputSchema: z.ZodEffects<z.ZodObject<{
     confusion: z.ZodBoolean;
     urea: z.ZodOptional<z.ZodNumber>;
+    ureaUnit: z.ZodOptional<z.ZodEnum<["mg/dL", "mmol/L"]>>;
     respiratoryRate: z.ZodNumber;
     bloodPressure: z.ZodObject<{
         systolic: z.ZodNumber;
@@ -23,6 +24,7 @@ export declare const CURB65InputSchema: z.ZodObject<{
         diastolic: number;
     };
     urea?: number | undefined;
+    ureaUnit?: "mg/dL" | "mmol/L" | undefined;
 }, {
     age: number;
     confusion: boolean;
@@ -32,6 +34,27 @@ export declare const CURB65InputSchema: z.ZodObject<{
         diastolic: number;
     };
     urea?: number | undefined;
+    ureaUnit?: "mg/dL" | "mmol/L" | undefined;
+}>, {
+    age: number;
+    confusion: boolean;
+    respiratoryRate: number;
+    bloodPressure: {
+        systolic: number;
+        diastolic: number;
+    };
+    urea?: number | undefined;
+    ureaUnit?: "mg/dL" | "mmol/L" | undefined;
+}, {
+    age: number;
+    confusion: boolean;
+    respiratoryRate: number;
+    bloodPressure: {
+        systolic: number;
+        diastolic: number;
+    };
+    urea?: number | undefined;
+    ureaUnit?: "mg/dL" | "mmol/L" | undefined;
 }>;
 export declare const CentorInputSchema: z.ZodObject<{
     fever: z.ZodBoolean;
@@ -212,8 +235,9 @@ export declare const AlvaradoInputSchema: z.ZodObject<{
     leftShift: boolean;
     migrationPain: boolean;
 }>;
-export declare const GlasgowBlatchfordInputSchema: z.ZodObject<{
+export declare const GlasgowBlatchfordInputSchema: z.ZodEffects<z.ZodObject<{
     bun: z.ZodOptional<z.ZodNumber>;
+    bunUnit: z.ZodOptional<z.ZodEnum<["mg/dL", "mmol/L"]>>;
     hemoglobin: z.ZodNumber;
     systolicBloodPressure: z.ZodNumber;
     pulse: z.ZodNumber;
@@ -232,6 +256,7 @@ export declare const GlasgowBlatchfordInputSchema: z.ZodObject<{
     hepaticDisease: boolean;
     cardiacFailure: boolean;
     bun?: number | undefined;
+    bunUnit?: "mg/dL" | "mmol/L" | undefined;
 }, {
     sex: "male" | "female";
     systolicBloodPressure: number;
@@ -242,6 +267,29 @@ export declare const GlasgowBlatchfordInputSchema: z.ZodObject<{
     hepaticDisease: boolean;
     cardiacFailure: boolean;
     bun?: number | undefined;
+    bunUnit?: "mg/dL" | "mmol/L" | undefined;
+}>, {
+    sex: "male" | "female";
+    systolicBloodPressure: number;
+    hemoglobin: number;
+    pulse: number;
+    melena: boolean;
+    syncope: boolean;
+    hepaticDisease: boolean;
+    cardiacFailure: boolean;
+    bun?: number | undefined;
+    bunUnit?: "mg/dL" | "mmol/L" | undefined;
+}, {
+    sex: "male" | "female";
+    systolicBloodPressure: number;
+    hemoglobin: number;
+    pulse: number;
+    melena: boolean;
+    syncope: boolean;
+    hepaticDisease: boolean;
+    cardiacFailure: boolean;
+    bun?: number | undefined;
+    bunUnit?: "mg/dL" | "mmol/L" | undefined;
 }>;
 export declare const NIHSSInputSchema: z.ZodObject<{
     levelOfConsciousness: z.ZodEnum<["alert", "arouses_minor", "arouses_repeated", "coma"]>;
@@ -515,9 +563,10 @@ export declare const ABCD2InputSchema: z.ZodObject<{
 }>;
 export declare const CalculateClinicalScoreSchema: z.ZodObject<{
     calculator: z.ZodEnum<["curb65", "centor", "wells_dvt", "wells_pe", "heart", "cha2ds2_vasc", "gcs", "qsofa", "alvarado", "glasgow_blatchford", "nihss", "sofa", "perc", "timi", "meld", "gad7", "grace", "has_bled", "abcd2"]>;
-    inputs: z.ZodUnion<[z.ZodObject<{
+    inputs: z.ZodUnion<[z.ZodEffects<z.ZodObject<{
         confusion: z.ZodBoolean;
         urea: z.ZodOptional<z.ZodNumber>;
+        ureaUnit: z.ZodOptional<z.ZodEnum<["mg/dL", "mmol/L"]>>;
         respiratoryRate: z.ZodNumber;
         bloodPressure: z.ZodObject<{
             systolic: z.ZodNumber;
@@ -539,6 +588,7 @@ export declare const CalculateClinicalScoreSchema: z.ZodObject<{
             diastolic: number;
         };
         urea?: number | undefined;
+        ureaUnit?: "mg/dL" | "mmol/L" | undefined;
     }, {
         age: number;
         confusion: boolean;
@@ -548,6 +598,27 @@ export declare const CalculateClinicalScoreSchema: z.ZodObject<{
             diastolic: number;
         };
         urea?: number | undefined;
+        ureaUnit?: "mg/dL" | "mmol/L" | undefined;
+    }>, {
+        age: number;
+        confusion: boolean;
+        respiratoryRate: number;
+        bloodPressure: {
+            systolic: number;
+            diastolic: number;
+        };
+        urea?: number | undefined;
+        ureaUnit?: "mg/dL" | "mmol/L" | undefined;
+    }, {
+        age: number;
+        confusion: boolean;
+        respiratoryRate: number;
+        bloodPressure: {
+            systolic: number;
+            diastolic: number;
+        };
+        urea?: number | undefined;
+        ureaUnit?: "mg/dL" | "mmol/L" | undefined;
     }>, z.ZodObject<{
         fever: z.ZodBoolean;
         tonsillarExudate: z.ZodBoolean;
@@ -719,8 +790,9 @@ export declare const CalculateClinicalScoreSchema: z.ZodObject<{
         leukocytosis: boolean;
         leftShift: boolean;
         migrationPain: boolean;
-    }>, z.ZodObject<{
+    }>, z.ZodEffects<z.ZodObject<{
         bun: z.ZodOptional<z.ZodNumber>;
+        bunUnit: z.ZodOptional<z.ZodEnum<["mg/dL", "mmol/L"]>>;
         hemoglobin: z.ZodNumber;
         systolicBloodPressure: z.ZodNumber;
         pulse: z.ZodNumber;
@@ -739,6 +811,7 @@ export declare const CalculateClinicalScoreSchema: z.ZodObject<{
         hepaticDisease: boolean;
         cardiacFailure: boolean;
         bun?: number | undefined;
+        bunUnit?: "mg/dL" | "mmol/L" | undefined;
     }, {
         sex: "male" | "female";
         systolicBloodPressure: number;
@@ -749,6 +822,29 @@ export declare const CalculateClinicalScoreSchema: z.ZodObject<{
         hepaticDisease: boolean;
         cardiacFailure: boolean;
         bun?: number | undefined;
+        bunUnit?: "mg/dL" | "mmol/L" | undefined;
+    }>, {
+        sex: "male" | "female";
+        systolicBloodPressure: number;
+        hemoglobin: number;
+        pulse: number;
+        melena: boolean;
+        syncope: boolean;
+        hepaticDisease: boolean;
+        cardiacFailure: boolean;
+        bun?: number | undefined;
+        bunUnit?: "mg/dL" | "mmol/L" | undefined;
+    }, {
+        sex: "male" | "female";
+        systolicBloodPressure: number;
+        hemoglobin: number;
+        pulse: number;
+        melena: boolean;
+        syncope: boolean;
+        hepaticDisease: boolean;
+        cardiacFailure: boolean;
+        bun?: number | undefined;
+        bunUnit?: "mg/dL" | "mmol/L" | undefined;
     }>, z.ZodObject<{
         levelOfConsciousness: z.ZodEnum<["alert", "arouses_minor", "arouses_repeated", "coma"]>;
         locQuestions: z.ZodEnum<["both_correct", "one_correct", "neither_correct"]>;
@@ -1022,6 +1118,7 @@ export declare const CalculateClinicalScoreSchema: z.ZodObject<{
             diastolic: number;
         };
         urea?: number | undefined;
+        ureaUnit?: "mg/dL" | "mmol/L" | undefined;
     } | {
         age: number;
         fever: boolean;
@@ -1089,6 +1186,7 @@ export declare const CalculateClinicalScoreSchema: z.ZodObject<{
         hepaticDisease: boolean;
         cardiacFailure: boolean;
         bun?: number | undefined;
+        bunUnit?: "mg/dL" | "mmol/L" | undefined;
     } | {
         levelOfConsciousness: "alert" | "arouses_minor" | "arouses_repeated" | "coma";
         locQuestions: "both_correct" | "one_correct" | "neither_correct";
@@ -1186,6 +1284,7 @@ export declare const CalculateClinicalScoreSchema: z.ZodObject<{
             diastolic: number;
         };
         urea?: number | undefined;
+        ureaUnit?: "mg/dL" | "mmol/L" | undefined;
     } | {
         age: number;
         fever: boolean;
@@ -1253,6 +1352,7 @@ export declare const CalculateClinicalScoreSchema: z.ZodObject<{
         hepaticDisease: boolean;
         cardiacFailure: boolean;
         bun?: number | undefined;
+        bunUnit?: "mg/dL" | "mmol/L" | undefined;
     } | {
         levelOfConsciousness: "alert" | "arouses_minor" | "arouses_repeated" | "coma";
         locQuestions: "both_correct" | "one_correct" | "neither_correct";
