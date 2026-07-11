@@ -6,6 +6,7 @@ import { searchMedicalInfo, SearchMedicalInfoSchema } from './tools/search.js';
 import { fetchMedicalArticle, FetchMedicalArticleSchema } from './tools/fetch.js';
 import { setPatientProfile, getPatientProfile, deletePatientProfile, SetPatientProfileSchema } from './tools/profile.js';
 import { calculateClinicalScore, CalculateClinicalScoreSchema } from './tools/clinical-scores.js';
+import { readMedicalDocument, ReadMedicalDocumentSchema } from './tools/document.js';
 import { loadProfile, formatProfileForPrompt } from './profile/manager.js';
 import { getDiagnosticPrompt } from './prompts/diagnostic.js';
 /**
@@ -174,6 +175,31 @@ class DoctorClaudeServer {
                         required: ['calculator', 'inputs'],
                     },
                 },
+                {
+                    name: 'read_medical_document',
+                    description: 'Read a LOCAL medical document so its contents can be discussed. ' +
+                        'Handles: PDF reports (lab results, discharge summaries, radiology/pathology reports) - text is extracted; ' +
+                        'scan images (PNG/JPG chest X-ray, CT/MRI slice export, ECG image) - returned as a viewable image; ' +
+                        'and plain-text/CSV exports. The file is read from the local filesystem and is never uploaded. ' +
+                        'This tool provides EDUCATIONAL information only - it is NOT a diagnostic-grade report, and any ' +
+                        'interpretation of imaging is preliminary and must be confirmed by a qualified radiologist/clinician.',
+                    inputSchema: {
+                        type: 'object',
+                        properties: {
+                            path: {
+                                type: 'string',
+                                description: 'Path to the local file (PDF, image such as PNG/JPG, or text/CSV). Absolute paths recommended.',
+                            },
+                            documentType: {
+                                type: 'string',
+                                enum: ['auto', 'lab_report', 'imaging_report', 'radiology_image', 'clinical_note', 'other'],
+                                default: 'auto',
+                                description: 'Optional hint about the document kind. "auto" infers handling from the file extension.',
+                            },
+                        },
+                        required: ['path'],
+                    },
+                },
             ],
         }));
         // Handle tool calls
@@ -267,6 +293,13 @@ ${result.details}
                         ],
                     };
                 }
+                else if (name === 'read_medical_document') {
+                    const validatedArgs = ReadMedicalDocumentSchema.parse(args);
+                    const doc = await readMedicalDocument(validatedArgs);
+                    return {
+                        content: this.formatDocument(doc),
+                    };
+                }
                 else {
                     throw new Error(`Unknown tool: ${name}`);
                 }
@@ -301,6 +334,24 @@ ${result.details}
             formatted += `${section.content}\n\n`;
         }
         return formatted;
+    }
+    formatDocument(doc) {
+        const disclaimer = '*EDUCATIONAL use only. Extracted content is not a diagnostic-grade report; ' +
+            'any imaging interpretation is preliminary and must be confirmed by a qualified clinician.*';
+        if (doc.kind === 'image') {
+            const header = `# Medical image: ${doc.path}\n` +
+                `**Type:** ${doc.documentType} · **Format:** ${doc.mimeType} · ` +
+                `**Size:** ${(doc.bytes / 1024).toFixed(0)} KB\n\n${disclaimer}`;
+            return [
+                { type: 'text', text: header },
+                { type: 'image', data: doc.base64, mimeType: doc.mimeType },
+            ];
+        }
+        const pageInfo = doc.pages !== undefined ? ` · **Pages:** ${doc.pages}` : '';
+        const header = `# Medical document: ${doc.path}\n` +
+            `**Type:** ${doc.documentType} · **Format:** ${doc.format}${pageInfo} · ` +
+            `**Size:** ${(doc.bytes / 1024).toFixed(0)} KB\n\n${disclaimer}\n\n---\n\n${doc.text}`;
+        return [{ type: 'text', text: header }];
     }
     setupPromptHandlers() {
         // List available prompts
