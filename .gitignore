@@ -3,5 +3,8 @@ CLAUDE.md
 
 node_modules/
 
+# oh-my-claudecode local session/state
+.omc/
+
 patient-profile.json
 .doctor-claude-profile.json
