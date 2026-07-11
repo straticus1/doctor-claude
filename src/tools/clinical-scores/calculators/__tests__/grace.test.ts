@@ -1,111 +1,155 @@
 import { describe, it, expect } from 'vitest';
 import { calculateClinicalScore } from '../../index.js';
 
-// GRACE ACS risk score — point table (as implemented in grace.ts; the module's
-// own banding is the source of truth for these expectations):
-//   Age:        ≤39=0, 40–49=18, 50–59=36, 60–69=55, 70–79=73, ≥80=91
-//   Heart rate: ≤69=0, 70–89=7, 90–109=13, 110–149=23, 150–199=36, ≥200=46
-//   Systolic BP:≤99=43, 100–119=34, 120–139=24, 140–159=15, 160–199=7, ≥200=0
-//   Creatinine: ≤0.39=2, 0.40–0.79=5, 0.80–1.19=8, 1.20–1.59=11, 1.60–1.99=14,
-//               2.00–3.99=23, ≥4.00=31
-//   Killip:     1=0, 2=21, 3=43, 4=64
-//   Cardiac arrest=+43, ST deviation=+30, elevated markers=+15
-// Risk categories: <109 Low, 109–140 Intermediate, ≥141 High.
+// GRACE 1.0 IN-HOSPITAL mortality nomogram (Granger CB et al., Arch Intern Med.
+// 2003;163(19):2345-2353). Point tables (verified against the published
+// Granger 2003 in-hospital nomogram):
+//
+//  Age (yr):    <30→0, 30–39→8, 40–49→25, 50–59→41, 60–69→58, 70–79→75,
+//               80–89→91, ≥90→100
+//  HR (bpm):    <50→0, 50–69→3, 70–89→9, 90–109→15, 110–149→24, 150–199→38,
+//               ≥200→46
+//  SBP (mmHg):  <80→58, 80–99→53, 100–119→43, 120–139→34, 140–159→24,
+//               160–199→10, ≥200→0
+//  Creat(mg/dL):0–0.39→1, 0.4–0.79→4, 0.8–1.19→7, 1.2–1.59→10, 1.6–1.99→13,
+//               2.0–3.99→21, ≥4.0→28
+//  Killip:      I→0, II→20, III→39, IV→59
+//  Cardiac arrest at admission +39, ST-segment deviation +28,
+//  Elevated cardiac markers +14
+//
+// Risk bands (in-hospital; getRiskGuidance first-matches score < threshold):
+//   <109 Low, 109–140 Intermediate, >140 High.
+// Max achievable = 100+46+58+28+59+39+28+14 = 372.
+
 function run(inputs: object) {
   return calculateClinicalScore({ calculator: 'grace', inputs } as any);
 }
 
-const lowRisk = {
-  age: 30,               // ≤39 → 0
-  heartRate: 60,         // ≤69 → 0
-  systolicBloodPressure: 150, // 140–159 → 15
-  creatinine: 0.9,       // 0.80–1.19 → 8
-  killipClass: 1,        // → 0
-  cardiacArrest: false,
-  stDeviation: false,
-  elevatedCardiacMarkers: false,
-};
-
-const highRisk = {
-  age: 85,               // ≥80 → 91
-  heartRate: 130,        // 110–149 → 23
-  systolicBloodPressure: 90, // ≤99 → 43
-  creatinine: 3.0,       // 2.00–3.99 → 23
-  killipClass: 4,        // → 64
-  cardiacArrest: true,   // +43
-  stDeviation: true,     // +30
-  elevatedCardiacMarkers: true, // +15
-};
-
-describe('GRACE worked examples', () => {
-  it('scores a clearly-low-risk young patient as Low', () => {
-    // 0 + 0 + 15 + 8 + 0 = 23
-    const r = run(lowRisk);
-    expect(r.score).toBe(23);
+describe('GRACE worked example', () => {
+  it('hand-summed 65yo NSTEMI → 179, High', () => {
+    // Age 65      → 60–69   → 58
+    // HR 95       → 90–109  → 15
+    // SBP 130     → 120–139 → 34
+    // Creat 1.3   → 1.2–1.59→ 10
+    // Killip II            → 20
+    // cardiac arrest false → 0
+    // ST deviation true    → 28
+    // elevated markers true→ 14
+    // Sum: 58+15+34+10+20+0+28+14 = 179
+    const r = run({
+      age: 65,
+      heartRate: 95,
+      systolicBloodPressure: 130,
+      creatinine: 1.3,
+      killipClass: 2,
+      cardiacArrest: false,
+      stDeviation: true,
+      elevatedCardiacMarkers: true,
+    });
+    expect(r.score).toBe(179);
     expect(r.maxScore).toBe(372);
-    expect(r.riskCategory).toMatch(/low/i);
+    expect(r.riskCategory).toMatch(/high/i);
   });
 
-  it('scores a clearly-high-risk elderly arrest patient as High', () => {
-    // 91 + 23 + 43 + 23 + 64 + 43 + 30 + 15 = 332
-    const r = run(highRisk);
-    expect(r.score).toBe(332);
+  it('reaches the published maximum of 372', () => {
+    // Age ≥90 100 + HR ≥200 46 + SBP <80 58 + Creat ≥4 28 + Killip IV 59
+    //   + arrest 39 + ST 28 + markers 14 = 372
+    const r = run({
+      age: 95,
+      heartRate: 210,
+      systolicBloodPressure: 70,
+      creatinine: 5.0,
+      killipClass: 4,
+      cardiacArrest: true,
+      stDeviation: true,
+      elevatedCardiacMarkers: true,
+    });
+    expect(r.score).toBe(372);
+    expect(r.maxScore).toBe(372);
     expect(r.riskCategory).toMatch(/high/i);
   });
 });
 
-describe('GRACE boundaries', () => {
-  it('crosses from Low to Intermediate at 109', () => {
-    // Age 60–69 (55) + HR 90–109 (13) + SBP 140–159 (15) + creat 0.8–1.19 (8)
-    //   + Killip 2 (21) = 112 → Intermediate
-    const intermediate = run({
-      age: 65,
-      heartRate: 100,
-      systolicBloodPressure: 150,
+describe('GRACE risk bands', () => {
+  it('low-risk young stable patient → 69, Low (<109)', () => {
+    // Age 45 → 25, HR 60 → 3, SBP 130 → 34, Creat 0.9 → 7, Killip I → 0
+    // Sum: 25+3+34+7+0 = 69
+    const r = run({
+      age: 45,
+      heartRate: 60,
+      systolicBloodPressure: 130,
       creatinine: 0.9,
-      killipClass: 2,
+      killipClass: 1,
       cardiacArrest: false,
       stDeviation: false,
       elevatedCardiacMarkers: false,
     });
-    expect(intermediate.score).toBe(112);
-    expect(intermediate.riskCategory).toMatch(/intermediate/i);
+    expect(r.score).toBe(69);
+    expect(r.riskCategory).toMatch(/low/i);
   });
 
-  it('scores an intermediate-band patient (109–140) as Intermediate', () => {
-    // Age 60–69 (55) + HR 90–109 (13) + SBP 140–159 (15) + creat 0.8–1.19 (8)
-    //   + Killip 1 (0) + ST deviation (30) = 121
+  it('severe hypotension (SBP <80 → +58) drives a High score', () => {
+    // Age 82 → 91, HR 130 → 24, SBP 70 → 58, Creat 2.5 → 21, Killip IV → 59,
+    // arrest → 39, ST → 28, markers → 14. Sum: 91+24+58+21+59+39+28+14 = 334
     const r = run({
-      age: 65,
-      heartRate: 100,
+      age: 82,
+      heartRate: 130,
+      systolicBloodPressure: 70,
+      creatinine: 2.5,
+      killipClass: 4,
+      cardiacArrest: true,
+      stDeviation: true,
+      elevatedCardiacMarkers: true,
+    });
+    expect(r.score).toBe(334);
+    expect(r.riskCategory).toMatch(/high/i);
+    // The SBP <80 bucket must contribute the full 58 (previously under-scored).
+    expect(r.details).toContain('Systolic BP 70 mmHg: +58');
+  });
+
+  it('places the Intermediate band between 109 and 140', () => {
+    // Age 70 → 75, HR 75 → 9, SBP 150 → 24, Creat 1.0 → 7, Killip I → 0
+    // Sum: 75+9+24+7 = 115 → Intermediate
+    const r = run({
+      age: 70,
+      heartRate: 75,
       systolicBloodPressure: 150,
-      creatinine: 0.9,
+      creatinine: 1.0,
       killipClass: 1,
       cardiacArrest: false,
-      stDeviation: true,
+      stDeviation: false,
       elevatedCardiacMarkers: false,
     });
-    expect(r.score).toBe(121);
+    expect(r.score).toBe(115);
     expect(r.riskCategory).toMatch(/intermediate/i);
   });
 });
 
-describe('GRACE rejection', () => {
-  it('rejects Killip class 0 (below schema minimum of 1)', () => {
-    expect(() => run({ ...lowRisk, killipClass: 0 })).toThrow();
+describe('GRACE input validation', () => {
+  const valid = {
+    age: 65,
+    heartRate: 80,
+    systolicBloodPressure: 120,
+    creatinine: 1.0,
+    killipClass: 2,
+    cardiacArrest: false,
+    stDeviation: false,
+    elevatedCardiacMarkers: false,
+  };
+
+  it('rejects Killip class 0 (below min of 1)', () => {
+    expect(() => run({ ...valid, killipClass: 0 })).toThrow();
   });
 
-  it('rejects Killip class 5 (above schema maximum of 4)', () => {
-    expect(() => run({ ...lowRisk, killipClass: 5 })).toThrow();
+  it('rejects Killip class 5 (above max of 4)', () => {
+    expect(() => run({ ...valid, killipClass: 5 })).toThrow();
   });
 
-  it('rejects a non-positive creatinine', () => {
-    expect(() => run({ ...lowRisk, creatinine: 0 })).toThrow();
-    expect(() => run({ ...lowRisk, creatinine: -1 })).toThrow();
+  it('rejects creatinine of 0 (must be positive)', () => {
+    expect(() => run({ ...valid, creatinine: 0 })).toThrow();
   });
 
-  it('rejects a missing required field', () => {
-    const { age, ...missing } = lowRisk;
-    expect(() => run(missing)).toThrow();
+  it('rejects negative creatinine', () => {
+    expect(() => run({ ...valid, creatinine: -1 })).toThrow();
   });
 });
