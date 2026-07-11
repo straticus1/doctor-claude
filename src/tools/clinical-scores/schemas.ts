@@ -3,12 +3,12 @@ import { z } from 'zod';
 export const CURB65InputSchema = z.object({
   confusion: z.boolean().describe('New onset confusion or altered mental status'),
   urea: z.number().optional().describe('Blood urea nitrogen (BUN) in mg/dL, or urea in mmol/L'),
-  respiratoryRate: z.number().describe('Respiratory rate (breaths per minute)'),
+  respiratoryRate: z.number().min(0).max(100).describe('Respiratory rate (breaths per minute)'),
   bloodPressure: z.object({
-    systolic: z.number().describe('Systolic blood pressure in mmHg'),
-    diastolic: z.number().describe('Diastolic blood pressure in mmHg'),
+    systolic: z.number().min(0).max(300).describe('Systolic blood pressure in mmHg'),
+    diastolic: z.number().min(0).max(200).describe('Diastolic blood pressure in mmHg'),
   }).describe('Blood pressure measurement'),
-  age: z.number().describe('Patient age in years'),
+  age: z.number().min(0).max(120).describe('Patient age in years'),
 });
 
 export const CentorInputSchema = z.object({
@@ -16,7 +16,7 @@ export const CentorInputSchema = z.object({
   tonsillarExudate: z.boolean().describe('Exudate or swelling on tonsils'),
   tenderAnteriorNodes: z.boolean().describe('Tender anterior cervical lymph nodes'),
   noCough: z.boolean().describe('Absence of cough'),
-  age: z.number().describe('Patient age in years'),
+  age: z.number().min(0).max(120).describe('Patient age in years'),
 });
 
 export const WellsDVTInputSchema = z.object({
@@ -45,15 +45,15 @@ export const WellsPEInputSchema = z.object({
 export const HEARTInputSchema = z.object({
   history: z.enum(['highly_suspicious', 'moderately_suspicious', 'slightly_suspicious']).describe('History: highly_suspicious (2pts) - chest pain pressure-like and related to exertion; moderately_suspicious (1pt) - some concerning features but not definitive; slightly_suspicious (0pts) - probably not cardiac'),
   ecg: z.enum(['significant_st_depression', 'nonspecific_changes', 'normal']).describe('ECG: significant_st_depression (2pts), nonspecific_changes (1pt) like T-wave inversion or ST elevation <1mm, normal (0pts)'),
-  age: z.number().describe('Patient age in years'),
-  riskFactors: z.number().min(0).describe('Number of cardiac risk factors (0-5+): hypertension, hyperlipidemia, diabetes, obesity (BMI>30), smoking (current or quit <3mo), family history of premature CAD'),
+  age: z.number().min(0).max(120).describe('Patient age in years'),
+  riskFactors: z.number().min(0).max(10).describe('Number of cardiac risk factors (0-5+): hypertension, hyperlipidemia, diabetes, obesity (BMI>30), smoking (current or quit <3mo), family history of premature CAD'),
   troponin: z.enum(['high', 'moderate', 'normal']).describe('Troponin level: high (2pts) ≥3x normal limit; moderate (1pt) 1-3x normal limit; normal (0pts) ≤normal limit'),
 });
 
 export const CHA2DS2VAScInputSchema = z.object({
   congestiveHeartFailure: z.boolean().describe('History of congestive heart failure or left ventricular dysfunction (ejection fraction ≤40%)'),
   hypertension: z.boolean().describe('History of hypertension or currently on antihypertensive medication'),
-  age: z.number().describe('Patient age in years'),
+  age: z.number().min(0).max(120).describe('Patient age in years'),
   diabetes: z.boolean().describe('History of diabetes mellitus'),
   strokeTIAThrombus: z.boolean().describe('Previous stroke, TIA, or thromboembolism'),
   vascularDisease: z.boolean().describe('Vascular disease: prior myocardial infarction, peripheral arterial disease, or aortic plaque'),
@@ -67,9 +67,9 @@ export const GCSInputSchema = z.object({
 });
 
 export const QSOFAInputSchema = z.object({
-  respiratoryRate: z.number().describe('Respiratory rate (breaths per minute)'),
+  respiratoryRate: z.number().min(0).max(100).describe('Respiratory rate (breaths per minute)'),
   alteredMentalStatus: z.boolean().describe('Altered mental status (GCS <15, confusion, disorientation, lethargy)'),
-  systolicBloodPressure: z.number().describe('Systolic blood pressure in mmHg'),
+  systolicBloodPressure: z.number().min(0).max(300).describe('Systolic blood pressure in mmHg'),
 });
 
 export const AlvaradoInputSchema = z.object({
@@ -87,8 +87,8 @@ export const AlvaradoInputSchema = z.object({
 export const GlasgowBlatchfordInputSchema = z.object({
   bun: z.number().optional().describe('Blood urea nitrogen (BUN) in mg/dL, or urea in mmol/L'),
   hemoglobin: z.number().describe('Hemoglobin in g/dL'),
-  systolicBloodPressure: z.number().describe('Systolic blood pressure in mmHg'),
-  pulse: z.number().describe('Heart rate in beats per minute'),
+  systolicBloodPressure: z.number().min(0).max(300).describe('Systolic blood pressure in mmHg'),
+  pulse: z.number().min(0).max(300).describe('Heart rate in beats per minute'),
   melena: z.boolean().describe('Presentation with melena (black, tarry stools)'),
   syncope: z.boolean().describe('Presentation with syncope (fainting)'),
   hepaticDisease: z.boolean().describe('History of hepatic disease (cirrhosis, chronic liver disease)'),
@@ -128,9 +128,9 @@ export const SOFAInputSchema = z.object({
 });
 
 export const PERCInputSchema = z.object({
-  age: z.number().describe('Patient age in years'),
-  heartRate: z.number().describe('Heart rate in beats per minute'),
-  oxygenSaturation: z.number().describe('Oxygen saturation (SpO2) on room air as percentage (e.g., 95 for 95%)'),
+  age: z.number().min(0).max(120).describe('Patient age in years'),
+  heartRate: z.number().min(0).max(300).describe('Heart rate in beats per minute'),
+  oxygenSaturation: z.number().min(0).max(100).describe('Oxygen saturation (SpO2) on room air as percentage (e.g., 95 for 95%)'),
   unilateralLegSwelling: z.boolean().describe('Unilateral leg swelling present'),
   hemoptysis: z.boolean().describe('Hemoptysis (coughing up blood)'),
   recentSurgeryOrTrauma: z.boolean().describe('Recent surgery or trauma within 4 weeks requiring treatment with general anesthesia'),
@@ -139,7 +139,7 @@ export const PERCInputSchema = z.object({
 });
 
 export const TIMIInputSchema = z.object({
-  age: z.number().describe('Patient age in years'),
+  age: z.number().min(0).max(120).describe('Patient age in years'),
   riskFactors: z.number().min(0).max(5).describe('Number of CAD risk factors (0-5): hypertension, hyperlipidemia, diabetes, family history of premature CAD, current smoking'),
   knownCAD: z.boolean().describe('Known coronary artery disease (prior MI, PCI, CABG, or coronary stenosis ≥50%)'),
   aspirinUse: z.boolean().describe('Aspirin use in the past 7 days'),
@@ -166,9 +166,9 @@ export const GAD7InputSchema = z.object({
 });
 
 export const GRACEInputSchema = z.object({
-  age: z.number().describe('Patient age in years'),
-  heartRate: z.number().describe('Heart rate in beats per minute'),
-  systolicBloodPressure: z.number().describe('Systolic blood pressure in mmHg'),
+  age: z.number().min(0).max(120).describe('Patient age in years'),
+  heartRate: z.number().min(0).max(300).describe('Heart rate in beats per minute'),
+  systolicBloodPressure: z.number().min(0).max(300).describe('Systolic blood pressure in mmHg'),
   creatinine: z.number().positive().describe('Serum creatinine in mg/dL'),
   killipClass: z.number().min(1).max(4).describe('Killip class (1-4): 1 = no heart failure, 2 = rales or JVD, 3 = pulmonary edema, 4 = cardiogenic shock'),
   cardiacArrest: z.boolean().describe('Cardiac arrest at admission'),
@@ -183,16 +183,16 @@ export const HASBLEDInputSchema = z.object({
   stroke: z.boolean().describe('History of stroke or TIA'),
   bleedingHistory: z.boolean().describe('Prior major bleeding or predisposition to bleeding (e.g., bleeding diathesis, anemia)'),
   labileINR: z.boolean().describe('Labile INR (if on warfarin): unstable/high INRs, time in therapeutic range <60%'),
-  age: z.number().describe('Patient age in years'),
+  age: z.number().min(0).max(120).describe('Patient age in years'),
   medications: z.boolean().describe('Medications predisposing to bleeding: concomitant antiplatelet agents (aspirin, clopidogrel) or NSAIDs'),
   alcoholUse: z.boolean().describe('Alcohol use: ≥8 drinks per week'),
 });
 
 export const ABCD2InputSchema = z.object({
-  age: z.number().describe('Patient age in years'),
+  age: z.number().min(0).max(120).describe('Patient age in years'),
   bloodPressure: z.object({
-    systolic: z.number().describe('Systolic blood pressure in mmHg'),
-    diastolic: z.number().describe('Diastolic blood pressure in mmHg'),
+    systolic: z.number().min(0).max(300).describe('Systolic blood pressure in mmHg'),
+    diastolic: z.number().min(0).max(200).describe('Diastolic blood pressure in mmHg'),
   }).describe('Blood pressure at presentation'),
   clinicalFeatures: z.enum(['unilateral_weakness', 'speech_impairment', 'neither']).describe('Clinical features of TIA: unilateral_weakness (2pts) - unilateral weakness with or without speech impairment; speech_impairment (1pt) - speech disturbance without weakness; neither (0pts) - other symptoms'),
   duration: z.enum(['less_than_10', '10_to_59', '60_or_more']).describe('Duration of TIA symptoms: less_than_10 (0pts) - symptoms lasted <10 minutes; 10_to_59 (1pt) - symptoms lasted 10-59 minutes; 60_or_more (2pts) - symptoms lasted ≥60 minutes'),
