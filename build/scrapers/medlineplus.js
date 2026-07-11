@@ -6,6 +6,13 @@ export async function searchMedlinePlus(query) {
     const searchUrl = `https://vsearch.nlm.nih.gov/vivisimo/cgi-bin/query-meta?v%3Aproject=medlineplus&v%3Asources=medlineplus-bundle&query=${encodeURIComponent(query)}`;
     const response = await fetch(searchUrl);
     const html = await response.text();
+    return parseMedlinePlusSearch(html);
+}
+/**
+ * Parse MedlinePlus search-results HTML into structured results.
+ * Pure function of the HTML — no network access — so it can be tested against fixtures.
+ */
+export function parseMedlinePlusSearch(html) {
     const $ = cheerio.load(html);
     const results = [];
     // Parse search results from ordered list
@@ -57,6 +64,13 @@ export async function searchMedlinePlus(query) {
 export async function fetchMedlinePlusArticle(url) {
     const response = await fetch(url);
     const html = await response.text();
+    return parseMedlinePlusArticle(html, url);
+}
+/**
+ * Parse a MedlinePlus article HTML into structured sections.
+ * Pure function of the HTML and its source URL — no network access.
+ */
+export function parseMedlinePlusArticle(html, url) {
     const $ = cheerio.load(html);
     // Get title
     const title = $('h1').first().text().trim() || $('title').text().trim();

@@ -479,8 +479,42 @@ export declare const HASBLEDInputSchema: z.ZodObject<{
     labileINR: boolean;
     alcoholUse: boolean;
 }>;
+export declare const ABCD2InputSchema: z.ZodObject<{
+    age: z.ZodNumber;
+    bloodPressure: z.ZodObject<{
+        systolic: z.ZodNumber;
+        diastolic: z.ZodNumber;
+    }, "strip", z.ZodTypeAny, {
+        systolic: number;
+        diastolic: number;
+    }, {
+        systolic: number;
+        diastolic: number;
+    }>;
+    clinicalFeatures: z.ZodEnum<["unilateral_weakness", "speech_impairment", "neither"]>;
+    duration: z.ZodEnum<["less_than_10", "10_to_59", "60_or_more"]>;
+    diabetes: z.ZodBoolean;
+}, "strip", z.ZodTypeAny, {
+    age: number;
+    bloodPressure: {
+        systolic: number;
+        diastolic: number;
+    };
+    diabetes: boolean;
+    clinicalFeatures: "unilateral_weakness" | "speech_impairment" | "neither";
+    duration: "less_than_10" | "10_to_59" | "60_or_more";
+}, {
+    age: number;
+    bloodPressure: {
+        systolic: number;
+        diastolic: number;
+    };
+    diabetes: boolean;
+    clinicalFeatures: "unilateral_weakness" | "speech_impairment" | "neither";
+    duration: "less_than_10" | "10_to_59" | "60_or_more";
+}>;
 export declare const CalculateClinicalScoreSchema: z.ZodObject<{
-    calculator: z.ZodEnum<["curb65", "centor", "wells_dvt", "wells_pe", "heart", "cha2ds2_vasc", "gcs", "qsofa", "alvarado", "glasgow_blatchford", "nihss", "sofa", "perc", "timi", "meld", "gad7", "grace", "has_bled"]>;
+    calculator: z.ZodEnum<["curb65", "centor", "wells_dvt", "wells_pe", "heart", "cha2ds2_vasc", "gcs", "qsofa", "alvarado", "glasgow_blatchford", "nihss", "sofa", "perc", "timi", "meld", "gad7", "grace", "has_bled", "abcd2"]>;
     inputs: z.ZodUnion<[z.ZodObject<{
         confusion: z.ZodBoolean;
         urea: z.ZodOptional<z.ZodNumber>;
@@ -943,9 +977,42 @@ export declare const CalculateClinicalScoreSchema: z.ZodObject<{
         bleedingHistory: boolean;
         labileINR: boolean;
         alcoholUse: boolean;
+    }>, z.ZodObject<{
+        age: z.ZodNumber;
+        bloodPressure: z.ZodObject<{
+            systolic: z.ZodNumber;
+            diastolic: z.ZodNumber;
+        }, "strip", z.ZodTypeAny, {
+            systolic: number;
+            diastolic: number;
+        }, {
+            systolic: number;
+            diastolic: number;
+        }>;
+        clinicalFeatures: z.ZodEnum<["unilateral_weakness", "speech_impairment", "neither"]>;
+        duration: z.ZodEnum<["less_than_10", "10_to_59", "60_or_more"]>;
+        diabetes: z.ZodBoolean;
+    }, "strip", z.ZodTypeAny, {
+        age: number;
+        bloodPressure: {
+            systolic: number;
+            diastolic: number;
+        };
+        diabetes: boolean;
+        clinicalFeatures: "unilateral_weakness" | "speech_impairment" | "neither";
+        duration: "less_than_10" | "10_to_59" | "60_or_more";
+    }, {
+        age: number;
+        bloodPressure: {
+            systolic: number;
+            diastolic: number;
+        };
+        diabetes: boolean;
+        clinicalFeatures: "unilateral_weakness" | "speech_impairment" | "neither";
+        duration: "less_than_10" | "10_to_59" | "60_or_more";
     }>]>;
 }, "strip", z.ZodTypeAny, {
-    calculator: "curb65" | "centor" | "wells_dvt" | "wells_pe" | "heart" | "cha2ds2_vasc" | "gcs" | "qsofa" | "alvarado" | "glasgow_blatchford" | "nihss" | "sofa" | "perc" | "timi" | "meld" | "gad7" | "grace" | "has_bled";
+    calculator: "curb65" | "centor" | "wells_dvt" | "wells_pe" | "heart" | "cha2ds2_vasc" | "gcs" | "qsofa" | "alvarado" | "glasgow_blatchford" | "nihss" | "sofa" | "perc" | "timi" | "meld" | "gad7" | "grace" | "has_bled" | "abcd2";
     inputs: {
         age: number;
         confusion: boolean;
@@ -1098,9 +1165,18 @@ export declare const CalculateClinicalScoreSchema: z.ZodObject<{
         bleedingHistory: boolean;
         labileINR: boolean;
         alcoholUse: boolean;
+    } | {
+        age: number;
+        bloodPressure: {
+            systolic: number;
+            diastolic: number;
+        };
+        diabetes: boolean;
+        clinicalFeatures: "unilateral_weakness" | "speech_impairment" | "neither";
+        duration: "less_than_10" | "10_to_59" | "60_or_more";
     };
 }, {
-    calculator: "curb65" | "centor" | "wells_dvt" | "wells_pe" | "heart" | "cha2ds2_vasc" | "gcs" | "qsofa" | "alvarado" | "glasgow_blatchford" | "nihss" | "sofa" | "perc" | "timi" | "meld" | "gad7" | "grace" | "has_bled";
+    calculator: "curb65" | "centor" | "wells_dvt" | "wells_pe" | "heart" | "cha2ds2_vasc" | "gcs" | "qsofa" | "alvarado" | "glasgow_blatchford" | "nihss" | "sofa" | "perc" | "timi" | "meld" | "gad7" | "grace" | "has_bled" | "abcd2";
     inputs: {
         age: number;
         confusion: boolean;
@@ -1253,6 +1329,15 @@ export declare const CalculateClinicalScoreSchema: z.ZodObject<{
         bleedingHistory: boolean;
         labileINR: boolean;
         alcoholUse: boolean;
+    } | {
+        age: number;
+        bloodPressure: {
+            systolic: number;
+            diastolic: number;
+        };
+        diabetes: boolean;
+        clinicalFeatures: "unilateral_weakness" | "speech_impairment" | "neither";
+        duration: "less_than_10" | "10_to_59" | "60_or_more";
     };
 }>;
 export type CalculateClinicalScoreInput = z.infer<typeof CalculateClinicalScoreSchema>;

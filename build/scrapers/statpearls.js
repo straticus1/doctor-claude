@@ -8,6 +8,13 @@ export async function searchStatPearls(query) {
     const searchUrl = `https://www.ncbi.nlm.nih.gov/books/NBK430685/?term=${encodeURIComponent(query)}`;
     const response = await fetch(searchUrl);
     const html = await response.text();
+    return parseStatPearlsSearch(html);
+}
+/**
+ * Parse StatPearls (NCBI book) search-results HTML into structured results.
+ * Pure function of the HTML — no network access — so it can be tested against fixtures.
+ */
+export function parseStatPearlsSearch(html) {
     const $ = cheerio.load(html);
     const results = [];
     // Parse search results within the book
@@ -39,6 +46,13 @@ export async function searchStatPearls(query) {
 export async function fetchStatPearlsArticle(url) {
     const response = await fetch(url);
     const html = await response.text();
+    return parseStatPearlsArticle(html, url);
+}
+/**
+ * Parse a StatPearls article HTML into structured sections.
+ * Pure function of the HTML and its source URL — no network access.
+ */
+export function parseStatPearlsArticle(html, url) {
     const $ = cheerio.load(html);
     // Get title
     const title = $('h1.heading-title, .article-title').first().text().trim() ||

@@ -318,4 +318,26 @@ export declare const CLINICAL_GUIDANCE: {
             readonly recommendation: "CRITICAL: Bleeding risk is extremely high. Anticoagulation may cause more harm than benefit. Strongly consider alternative strategies: left atrial appendage closure device (Watchman) for atrial fibrillation patients with high stroke risk. If anticoagulation absolutely necessary, use lowest effective intensity, DOACs strongly preferred over warfarin. MANDATORY interventions: aggressive BP control, eliminate all modifiable risk factors, nephrology consultation if renal dysfunction, hepatology if liver disease, hematology consultation for bleeding diathesis. Very frequent monitoring (monthly). Comprehensive patient education. Consider hospice/palliative care consultation if multiple comorbidities. Document extensive shared decision-making. Some patients may be better served by aspirin alone or no antithrombotic therapy after thorough discussion.";
         };
     }];
+    readonly abcd2: readonly [{
+        readonly threshold: 4;
+        readonly guidance: {
+            readonly riskCategory: "Low Risk";
+            readonly interpretation: "Low risk of stroke after TIA (1% at 2 days, 1.2% at 7 days, 3.1% at 90 days)";
+            readonly recommendation: "Outpatient management may be appropriate for select low-risk patients. Urgent neurology evaluation within 24-48 hours. Brain MRI/MRA or CT/CTA should be performed urgently (within 24 hours). Carotid imaging (ultrasound, CTA, or MRA) required. Start antiplatelet therapy (aspirin or aspirin + clopidogrel) unless contraindicated. Address vascular risk factors: blood pressure control, statin therapy, diabetes management. If carotid stenosis >50% found, urgent vascular surgery consultation. Ensure close follow-up arranged.";
+        };
+    }, {
+        readonly threshold: 6;
+        readonly guidance: {
+            readonly riskCategory: "Moderate Risk";
+            readonly interpretation: "Moderate risk of stroke after TIA (4.1% at 2 days, 5.9% at 7 days, 9.8% at 90 days)";
+            readonly recommendation: "Hospital admission recommended or urgent evaluation in specialized TIA clinic with brain and vascular imaging within 24 hours. Brain MRI with diffusion-weighted imaging (DWI) preferred over CT. Vascular imaging of head and neck (CTA, MRA, or carotid ultrasound) essential. Continuous cardiac monitoring (telemetry) for at least 24 hours to detect atrial fibrillation. Start dual antiplatelet therapy (aspirin + clopidogrel for 21 days) if ischemic stroke ruled out. Aggressive risk factor modification: statin, blood pressure control, diabetes management. If significant carotid stenosis (70-99%), urgent carotid endarterectomy (CEA) or stenting within 2 weeks. Cardiology and neurology consultation recommended.";
+        };
+    }, {
+        readonly threshold: 8;
+        readonly guidance: {
+            readonly riskCategory: "High Risk";
+            readonly interpretation: "High risk of stroke after TIA (8.1% at 2 days, 11.7% at 7 days, 17.8% at 90 days)";
+            readonly recommendation: "URGENT: Hospital admission strongly recommended. Immediate workup required. Emergent brain imaging (MRI with DWI preferred, CT if MRI unavailable) to assess for acute infarction. Urgent vascular imaging of head and neck (CTA or MRA) to evaluate for carotid stenosis, intracranial stenosis, or dissection. Cardiac monitoring (telemetry) for ≥24-48 hours. Echocardiography (TEE preferred over TTE for PFO/thrombus detection). Immediate dual antiplatelet therapy (aspirin + clopidogrel for 21 days) if hemorrhage excluded. Urgent neurology consultation. If high-grade carotid stenosis (70-99%), emergent vascular surgery consultation for CEA or stenting within 48-72 hours if possible. Intensive blood pressure management, high-intensity statin. Consider extended cardiac monitoring (30-day event monitor) if no clear etiology found. Stroke prevention clinic follow-up essential.";
+        };
+    }];
 };
