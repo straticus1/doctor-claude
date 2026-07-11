@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { GlasgowBlatchfordInputSchema } from '../schemas.js';
 import type { ScoreResult } from '../types.js';
-import { getRiskGuidance, convertUreaToBUN } from '../utils.js';
+import { getRiskGuidance, ureaToBUN } from '../utils.js';
 import {
   GLASGOW_BUN_THRESHOLD_HIGH,
   GLASGOW_BUN_THRESHOLD_MEDIUM_HIGH,
@@ -20,8 +20,8 @@ export function calculateGlasgowBlatchford(inputs: z.infer<typeof GlasgowBlatchf
   let score = 0;
   const details: string[] = [];
 
-  if (inputs.bun !== undefined) {
-    const bunMgDl = convertUreaToBUN(inputs.bun);
+  if (inputs.bun !== undefined && inputs.bunUnit !== undefined) {
+    const bunMgDl = ureaToBUN(inputs.bun, inputs.bunUnit);
     if (bunMgDl >= GLASGOW_BUN_THRESHOLD_HIGH) {
       score += 6;
       details.push(`BUN ≥${GLASGOW_BUN_THRESHOLD_HIGH} mg/dL: +6`);

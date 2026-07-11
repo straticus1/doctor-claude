@@ -4,16 +4,13 @@ import { calculateClinicalScore } from '../../index.js';
 // CURB-65 (Lim et al., Thorax 2003): confusion, BUN >19 mg/dL (urea >7 mmol/L),
 // RR ≥30, SBP <90 or DBP ≤60, age ≥65 — 1 point each.
 //
-// NOTE on urea values: convertUreaToBUN treats any value ≤ UREA_MMOL_THRESHOLD (40)
-// as mmol/L and multiplies by 2.8. That makes sub-threshold mg/dL BUN values
-// (e.g. 10 or 19 mg/dL) untestable as-is — the heuristic reads them as mmol/L and
-// scores them. Tests below therefore use values whose interpretation is unambiguous
-// under both the published rule and the heuristic:
-//   5  → read as mmol/L → BUN 14 mg/dL (no point; also no point if read as mg/dL)
-//   45 → read as mg/dL (>40) → above the >19 mg/dL threshold (scores)
+// The urea value carries an explicit `ureaUnit` ('mg/dL' for US BUN, 'mmol/L' for
+// international urea). The calculator never infers the unit from the magnitude, so
+// both unit paths are exercised directly at the published cut-points below.
 const base = {
   confusion: false,
-  urea: 5, // mmol/L (≈ BUN 14 mg/dL), below threshold under either unit reading
+  urea: 5,
+  ureaUnit: 'mmol/L' as const, // 5 mmol/L ≈ BUN 14 mg/dL, below the >19 threshold
   respiratoryRate: 18,
   bloodPressure: { systolic: 120, diastolic: 80 },
   age: 50,
@@ -30,10 +27,11 @@ describe('CURB-65 worked examples', () => {
     expect(r.riskCategory).toMatch(/low/i);
   });
 
-  it('scores 5 for a maximal presentation (MDCalc worked example)', () => {
+  it('scores 5 for a maximal presentation', () => {
     const r = run({
       confusion: true,
       urea: 25,
+      ureaUnit: 'mmol/L', // 25 mmol/L ≈ BUN 70 mg/dL, well above threshold
       respiratoryRate: 32,
       bloodPressure: { systolic: 85, diastolic: 55 },
       age: 80,
@@ -43,8 +41,8 @@ describe('CURB-65 worked examples', () => {
     expect(r.riskCategory).toMatch(/high|severe/i);
   });
 
-  it('scores 2 for elderly patient with elevated BUN only', () => {
-    const r = run({ ...base, age: 70, urea: 24 });
+  it('scores 2 for elderly patient with elevated urea only', () => {
+    const r = run({ ...base, age: 70, urea: 24, ureaUnit: 'mmol/L' });
     expect(r.score).toBe(2);
   });
 });
@@ -70,25 +68,38 @@ describe('CURB-65 boundaries', () => {
     expect(run({ ...base, bloodPressure: { systolic: 120, diastolic: 61 } }).score).toBe(0);
   });
 
-  // The published mg/dL boundary is >19, but 19 and 20 fall inside the unit
-  // heuristic's mmol/L range (≤40) and would be converted (19 → 53.2 mg/dL).
-  // Test the threshold with values whose unit reading is unambiguous instead.
-  it('BUN 45 mg/dL scores (unambiguously mg/dL, >19); urea 5 mmol/L (BUN 14) does not', () => {
-    expect(run({ ...base, urea: 45 }).score).toBe(1);
-    expect(run({ ...base, urea: 5 }).score).toBe(0);
+  it('BUN in mg/dL: 20 scores (>19); 19 does not', () => {
+    expect(run({ ...base, urea: 20, ureaUnit: 'mg/dL' }).score).toBe(1);
+    expect(run({ ...base, urea: 19, ureaUnit: 'mg/dL' }).score).toBe(0);
   });
 
-  it('urea in mmol/L is converted (8 mmol/L ≈ BUN 22.4 → scores)', () => {
-    expect(run({ ...base, urea: 8 }).score).toBe(1);
+  it('urea in mmol/L: 8 (≈BUN 22.4) scores; 6 (≈BUN 16.8) does not', () => {
+    expect(run({ ...base, urea: 8, ureaUnit: 'mmol/L' }).score).toBe(1);
+    expect(run({ ...base, urea: 6, ureaUnit: 'mmol/L' }).score).toBe(0);
+  });
+
+  it('the SAME numeric value scores differently by unit (the bug this guards against)', () => {
+    // 15 as US BUN mg/dL is normal (no point); 15 as mmol/L urea ≈ BUN 42 (scores).
+    expect(run({ ...base, urea: 15, ureaUnit: 'mg/dL' }).score).toBe(0);
+    expect(run({ ...base, urea: 15, ureaUnit: 'mmol/L' }).score).toBe(1);
   });
 
   it('omitted urea contributes nothing rather than guessing', () => {
-    const { urea, ...noUrea } = base;
+    const { urea, ureaUnit, ...noUrea } = base;
     expect(run(noUrea).score).toBe(0);
   });
 });
 
 describe('CURB-65 rejection', () => {
+  it('rejects urea provided without a unit (fails closed, never guesses)', () => {
+    const { ureaUnit, ...noUnit } = base;
+    expect(() => run({ ...noUnit, urea: 20 })).toThrow();
+  });
+
+  it('rejects an invalid urea unit', () => {
+    expect(() => run({ ...base, urea: 20, ureaUnit: 'mg/L' })).toThrow();
+  });
+
   it('rejects missing required field', () => {
     const { age, ...missingAge } = base;
     expect(() => run(missingAge)).toThrow();
