@@ -1,58 +1,76 @@
 <!--
-  HAND-MADE FIXTURE (not a live capture).
+  REAL-SHAPE FIXTURE for the current NCBI Bookshelf StatPearls markup.
 
-  Why: as of capture (2026-07), the live NCBI Bookshelf article page for a
-  StatPearls chapter (e.g. https://www.ncbi.nlm.nih.gov/books/NBK551501/)
-  renders its body under `.book-part` / `.jig-ncbiinpagenav body-content`
-  containers, whereas parseStatPearlsArticle() targets
-  `.article-content, #article-content, .chapter-content`. The live HTML
-  therefore parses to 0 sections — a real scraper drift that the live smoke
-  suite (scrapers.live.test.ts) is designed to surface.
+  Captured/modeled from the live article page (e.g.
+  https://www.ncbi.nlm.nih.gov/books/NBK551501/) as of 2026-07. The live
+  chapter body renders under `.book-part` > `.body-content`, where each section
+  is a wrapper `<div id="article-NNNNN.sN">` holding an <h2>/<h3> heading
+  followed by its content elements. `.book-part` ALSO wraps the citation
+  front-matter (the "StatPearls [Internet]." block), so parseStatPearlsArticle()
+  prefers the inner `.body-content` container to skip that noise. The clean
+  article title comes from the `citation_title` meta tag (the visible <h1> is a
+  generic "Bookshelf" banner).
 
-  This fixture reproduces the DOM shape parseStatPearlsArticle() is written
-  against, so the offline fixture test verifies the parser's extraction logic
-  (title, h2-delimited sections, author/updated metadata, paragraph fallback)
-  deterministically. It is intentionally minimal and representative.
+  This fixture mirrors that DOM shape so the offline test verifies the parser
+  against the markup it actually meets in production. Content is trimmed and
+  representative; tests assert SHAPE and NON-EMPTINESS, not exact text.
 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Diabetes - StatPearls - NCBI Bookshelf</title>
+  <title>Diabetes Mellitus - StatPearls - NCBI Bookshelf</title>
+  <meta name="citation_title" content="Diabetes Mellitus" />
+  <meta name="citation_author" content="Sapra A" />
+  <meta name="citation_author" content="Bhandari P" />
 </head>
 <body>
-  <div class="article-details">
-    <h1 class="heading-title">Diabetes Mellitus</h1>
-    <div class="authors contrib-group">Sapra A, Bhandari P.</div>
-    <div class="fm-updated">Last Update: June 21, 2023.</div>
-  </div>
+  <div id="maincontent">
+    <h1>Bookshelf</h1>
+    <div class="book-part">
+      <!-- Citation front-matter that must NOT be parsed as a clinical section -->
+      <div id="_NBK551501_">
+        <h2>StatPearls [Internet].</h2>
+        <p>Treasure Island (FL): StatPearls Publishing; 2026 Jan-.</p>
+      </div>
 
-  <div class="article-content">
-    <h2>Continuing Education Activity</h2>
-    <p>Diabetes mellitus is a chronic metabolic disorder characterized by
-       persistent hyperglycemia resulting from defects in insulin secretion,
-       insulin action, or both.</p>
-    <p>This activity reviews the evaluation and management of diabetes mellitus
-       and highlights the role of the interprofessional team.</p>
+      <div class="body-content whole_rhythm">
+        <div id="article-20953.s1">
+          <h2 id="_article-20953_s1_">Continuing Education Activity</h2>
+          <p>Diabetes mellitus is a chronic metabolic disorder characterized by
+             persistent hyperglycemia resulting from defects in insulin secretion,
+             insulin action, or both.</p>
+          <p>This activity reviews the evaluation and management of diabetes mellitus
+             and highlights the role of the interprofessional team.</p>
+        </div>
 
-    <h2>Introduction</h2>
-    <p>According to the World Health Organization, diabetes mellitus affects
-       hundreds of millions of people worldwide and its prevalence continues to
-       rise.</p>
+        <div id="article-20953.s2">
+          <h2 id="_article-20953_s2_">Introduction</h2>
+          <p>According to the World Health Organization, diabetes mellitus affects
+             hundreds of millions of people worldwide and its prevalence continues to
+             rise.</p>
+        </div>
 
-    <h2>Etiology</h2>
-    <p>Type 1 diabetes mellitus results from autoimmune destruction of the
-       insulin-producing beta cells of the pancreas.</p>
-    <p>Type 2 diabetes mellitus is characterized by insulin resistance combined
-       with a relative insulin secretory defect.</p>
+        <div id="article-20953.s3">
+          <h2 id="_article-20953_s3_">Etiology</h2>
+          <p>Type 1 diabetes mellitus results from autoimmune destruction of the
+             insulin-producing beta cells of the pancreas.</p>
+          <p>Type 2 diabetes mellitus is characterized by insulin resistance combined
+             with a relative insulin secretory defect.</p>
+          <div id="article-20953.s3.1">
+            <h3 id="_article-20953_s3_1_">Risk Factors</h3>
+            <p>Obesity, physical inactivity, family history, and advancing age are
+               established risk factors for type 2 diabetes mellitus.</p>
+          </div>
+        </div>
 
-    <h3>Risk Factors</h3>
-    <p>Obesity, physical inactivity, family history, and advancing age are
-       established risk factors for type 2 diabetes mellitus.</p>
-
-    <h2>Pathophysiology</h2>
-    <p>Chronic hyperglycemia leads to microvascular and macrovascular
-       complications affecting the eyes, kidneys, nerves, and cardiovascular
-       system.</p>
+        <div id="article-20953.s4">
+          <h2 id="_article-20953_s4_">Pathophysiology</h2>
+          <p>Chronic hyperglycemia leads to microvascular and macrovascular
+             complications affecting the eyes, kidneys, nerves, and cardiovascular
+             system.</p>
+        </div>
+      </div>
+    </div>
   </div>
 </body>
 </html>

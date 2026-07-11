@@ -85,20 +85,52 @@ export async function fetchStatPearlsArticle(url: string): Promise<StatPearlsArt
 export function parseStatPearlsArticle(html: string, url: string): StatPearlsArticle {
   const $ = cheerio.load(html);
 
-  // Get title
-  const title = $('h1.heading-title, .article-title').first().text().trim() ||
+  // Get title. Current NCBI Bookshelf pages expose a clean article title via
+  // the `citation_title` meta tag; the visible <h1> is the generic "Bookshelf"
+  // banner and the <title> text is polluted with social-media link text, so
+  // prefer the meta tag and keep the legacy selectors as fallbacks.
+  const title =
+    $('meta[name="citation_title"]').attr('content')?.trim() ||
+    $('h1.content-title, h1.heading-title, .article-title').first().text().trim() ||
     $('title').text().replace(' - StatPearls - NCBI Bookshelf', '').trim();
 
-  // Get metadata
-  const authors = $('.authors, .contrib-group').text().trim();
-  const lastUpdated = $('.fm-updated, .fm-last-update').text().trim();
+  // Get metadata. `citation_author` meta tags are the reliable modern source;
+  // fall back to the legacy author/contrib containers.
+  const authors =
+    $('meta[name="citation_author"]')
+      .map((_, elem) => $(elem).attr('content'))
+      .get()
+      .join(', ')
+      .trim() ||
+    $('.authors, .contrib-group').first().text().trim();
+  const lastUpdated = $('.fm-updated, .fm-last-update').first().text().trim();
+
+  // Locate the article body. Modern NCBI Bookshelf renders the chapter under
+  // `.body-content` (inside `.book-part`); `.book-part` also wraps the citation
+  // front-matter, so `.body-content` is preferred to skip that noise. The
+  // legacy selectors are kept for older/alternate markup and test fixtures.
+  const contentSelectors = [
+    '.body-content',
+    '.article-content',
+    '#article-content',
+    '.chapter-content',
+    '.book-part',
+  ];
+  const contentSelector =
+    contentSelectors.find((selector) => $(selector).first().length) || 'body';
+  const $content = $(contentSelector).first();
 
   const sections: { name: string; content: string }[] = [];
 
-  // StatPearls articles have structured sections with h2 headings
-  $('.article-content, #article-content, .chapter-content').find('h2, h3').each((_, elem) => {
+  // StatPearls chapters are divided into sections, each a wrapper element
+  // containing an h2/h3 heading followed by its content elements. Walk each
+  // heading and gather following siblings until the next heading.
+  $content.find('h2, h3').each((_, elem) => {
     const $heading = $(elem);
     const sectionName = $heading.text().trim();
+    if (!sectionName) {
+      return;
+    }
 
     // Get content until next heading
     const contentParts: string[] = [];
@@ -112,7 +144,7 @@ export function parseStatPearlsArticle(html: string, url: string): StatPearlsArt
       $next = $next.next();
     }
 
-    if (sectionName && contentParts.length > 0) {
+    if (contentParts.length > 0) {
       sections.push({
         name: sectionName,
         content: contentParts.join('\n\n')
@@ -120,10 +152,10 @@ export function parseStatPearlsArticle(html: string, url: string): StatPearlsArt
     }
   });
 
-  // Fallback: if no sections found, get all paragraphs
+  // Fallback: if no sections found, get all paragraphs from the content root
   if (sections.length === 0) {
     const allContent: string[] = [];
-    $('.article-content p, #article-content p, .chapter-content p').each((_, elem) => {
+    $content.find('p').each((_, elem) => {
       const text = $(elem).text().trim();
       if (text) {
         allContent.push(text);

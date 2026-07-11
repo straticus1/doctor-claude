@@ -11,12 +11,12 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const fixture = (name: string) =>
   readFileSync(join(__dirname, '..', '__fixtures__', name), 'utf8');
 
-// The search fixture is real HTML captured from NCBI Bookshelf.
-// The article fixture is hand-made (see its header comment): current live
-// NCBI article pages render under different containers than the parser
-// targets, so a real capture parses to 0 sections — a drift the live smoke
-// suite catches. The hand-made fixture exercises the parser's extraction
-// logic against the DOM shape it is written for.
+// Both fixtures reflect the real NCBI Bookshelf markup. The article fixture
+// mirrors the current live DOM shape (`.book-part` > `.body-content` with
+// `div[id^="article-"]` section wrappers and a `citation_title` meta tag; see
+// its header comment), so the parser is verified against the structure it
+// actually meets in production, including that the citation front-matter block
+// is not mistaken for a clinical section.
 // Tests assert SHAPE and NON-EMPTINESS, not exact text.
 
 describe('parseStatPearlsSearch', () => {
