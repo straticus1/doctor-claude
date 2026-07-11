@@ -28,8 +28,7 @@ export function calculateMELD(inputs: z.infer<typeof MELDInputSchema>): ScoreRes
     MELD_CREATININE_COEFFICIENT * Math.log(creatinine) +
     MELD_CONSTANT;
 
-  let score = Math.round(rawScore * 10) / 10;
-  score = Math.round(score);
+  let score = Math.round(rawScore);
   score = Math.max(MELD_MIN_SCORE, Math.min(score, MELD_MAX_SCORE));
 
   const details: string[] = [];

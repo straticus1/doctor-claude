@@ -16,7 +16,7 @@ export const CLINICAL_GUIDANCE = {
   ],
   wells_pe: [
     { threshold: 2, guidance: { riskCategory: 'Low Probability', interpretation: 'Low probability of PE (~2%)', recommendation: 'D-dimer testing recommended. If D-dimer is negative, PE is effectively ruled out. If positive, proceed to CT pulmonary angiography (CTPA).' } },
-    { threshold: 7, guidance: { riskCategory: 'Moderate Probability', interpretation: 'Moderate probability of PE (~20-30%)', recommendation: 'D-dimer or CTPA recommended depending on clinical judgment. If D-dimer positive or not performed, CTPA is indicated.' } },
+    { threshold: 6.5, guidance: { riskCategory: 'Moderate Probability', interpretation: 'Moderate probability of PE (~20-30%)', recommendation: 'D-dimer or CTPA recommended depending on clinical judgment. If D-dimer positive or not performed, CTPA is indicated.' } },
     { threshold: 13, guidance: { riskCategory: 'High Probability', interpretation: 'High probability of PE (~65%)', recommendation: 'CT pulmonary angiography (CTPA) strongly recommended. Consider empiric anticoagulation if no contraindications while awaiting imaging.' } },
   ],
   heart: [

@@ -5,7 +5,7 @@ import { calculateClinicalScore } from '../../index.js';
 //   clinical signs of DVT 3, PE most likely diagnosis 3,
 //   heart rate >100 1.5, immobilization/surgery 1.5, previous PE/DVT 1.5,
 //   hemoptysis 1, malignancy 1.  Max 12.5.
-// Three-tier risk: <2 Low (~2%), 2 to <7 Moderate, ≥7 High.
+// Three-tier risk: <2 Low (~2%), 2 to 6 Moderate, >6 High (so 6.5 is High).
 const allFalse = {
   clinicalDVTSigns: false,
   peIsLikelyDiagnosis: false,
@@ -32,6 +32,13 @@ describe('Wells PE worked examples', () => {
     const r = run({ ...allFalse, clinicalDVTSigns: true, peIsLikelyDiagnosis: true });
     expect(r.score).toBe(6);
     expect(r.riskCategory).toMatch(/moderate/i);
+  });
+
+  it('scores 6.5 as High (published cutoff is High >6; 6.5 must not be Moderate)', () => {
+    // 3 (clinical DVT signs) + 1.5 (HR>100) + 1 (hemoptysis) + 1 (malignancy) = 6.5
+    const r = run({ ...allFalse, clinicalDVTSigns: true, heartRateOver100: true, hemoptysis: true, malignancy: true });
+    expect(r.score).toBeCloseTo(6.5, 5);
+    expect(r.riskCategory).toMatch(/high/i);
   });
 
   it('scores the maximum 12.5 when every criterion is present', () => {

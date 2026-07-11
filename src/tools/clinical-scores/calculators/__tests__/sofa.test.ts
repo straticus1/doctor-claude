@@ -63,6 +63,11 @@ describe('SOFA respiration (PaO2/FiO2)', () => {
   it('ratio <100 with mechanical ventilation → 4', () => {
     expect(run({ ...base, pao2: 90, fio2: 1.0, mechanicalVentilation: true }).score).toBe(4);
   });
+  it('ratio <100 WITHOUT ventilation → 2, not 4 (scores 3 and 4 require support)', () => {
+    // Regression: a profoundly hypoxic but non-ventilated patient caps at 2,
+    // because SOFA respiration scores 3 and 4 both require respiratory support.
+    expect(run({ ...base, pao2: 90, fio2: 1.0, mechanicalVentilation: false }).score).toBe(2);
+  });
   it('FiO2 given as a percentage (50) matches the decimal form (0.5)', () => {
     // 100/0.5 = 200 → not <200, <300 → 2, identical whether FiO2 is 50 or 0.5
     const pct = run({ ...base, pao2: 100, fio2: 50 }).score;
@@ -120,14 +125,14 @@ describe('SOFA cardiovascular', () => {
   it('dopamine_low → 2', () => {
     expect(run({ ...base, vasopressors: 'dopamine_low' }).score).toBe(2);
   });
-  it('dopamine_medium → 3', () => {
-    expect(run({ ...base, vasopressors: 'dopamine_medium' }).score).toBe(3);
+  it('dopamine >5-15 OR low-dose epi/norepi (≤0.1) → 3', () => {
+    expect(run({ ...base, vasopressors: 'dopamine_medium_or_epi_norepi_low' }).score).toBe(3);
   });
-  it('dopamine_high_epi_norepi → 4', () => {
-    expect(run({ ...base, vasopressors: 'dopamine_high_epi_norepi' }).score).toBe(4);
+  it('dopamine >15 OR high-dose epi/norepi (>0.1) → 4', () => {
+    expect(run({ ...base, vasopressors: 'dopamine_high_or_epi_norepi_high' }).score).toBe(4);
   });
   it('vasopressors take priority over MAP (pressor present, MAP normal)', () => {
-    expect(run({ ...base, meanArterialPressure: 80, vasopressors: 'dopamine_high_epi_norepi' }).score).toBe(4);
+    expect(run({ ...base, meanArterialPressure: 80, vasopressors: 'dopamine_high_or_epi_norepi_high' }).score).toBe(4);
   });
 });
 

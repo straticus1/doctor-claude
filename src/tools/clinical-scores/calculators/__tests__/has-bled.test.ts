@@ -8,12 +8,9 @@ import { calculateClinicalScore } from '../../index.js';
 // Risk categories (guidance.ts, first threshold with score < threshold):
 //   0 Low, 1 Low-Moderate, 2 Moderate, 3–4 High, 5–9 Very High.
 //
-// AGE NOTE: the canonical HAS-BLED "Elderly" criterion is age > 65 (strict), so a
-// 65-year-old should score 0. This implementation uses `age >= HAS_BLED_AGE_THRESHOLD`
-// (65) — see has-bled.ts / constants.ts — so it awards the point at exactly 65. The
-// boundary test below asserts the IMPLEMENTED behavior (65 scores) and flags the
-// one-year deviation from the published rule; the maximal worked example uses age 70,
-// which scores under either interpretation.
+// AGE NOTE: the HAS-BLED "Elderly" criterion is age > 65 (strict), so a 65-year-old
+// scores 0 and only age ≥66 scores the point. The boundary tests below assert this
+// published rule.
 const base = {
   hypertension: false,
   abnormalRenalFunction: false,
@@ -56,11 +53,13 @@ describe('HAS-BLED worked examples', () => {
 });
 
 describe('HAS-BLED boundaries', () => {
-  // Implementation uses age >= 65 (constants: HAS_BLED_AGE_THRESHOLD = 65).
-  // Canonical HAS-BLED is age > 65, so canonically 65 would NOT score — this
-  // asserts the implemented >= behavior and documents the deviation.
-  it('age 65 scores +1 (implementation uses >=65; canonical is >65)', () => {
-    expect(run({ ...base, age: 65 }).score).toBe(1);
+  // Published HAS-BLED "Elderly" is age > 65 (strict): 65 does NOT score, 66 does.
+  it('age 65 scores +0 (criterion is strictly >65)', () => {
+    expect(run({ ...base, age: 65 }).score).toBe(0);
+  });
+
+  it('age 66 scores +1', () => {
+    expect(run({ ...base, age: 66 }).score).toBe(1);
   });
 
   it('age 64 scores +0', () => {

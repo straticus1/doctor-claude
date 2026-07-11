@@ -7,7 +7,7 @@ import { calculateClinicalScore } from '../../index.js';
 //  1b LOC questions: both 0 / one 1 / neither 2
 //  1c LOC commands: both 0 / one 1 / neither 2
 //  2 Best gaze: normal 0 / partial 1 / forced 2
-//  3 Visual: no_loss 0 / partial_hemianopia 1 / complete_hemianopia 3
+//  3 Visual: no_loss 0 / partial_hemianopia 1 / complete_hemianopia 2 / bilateral_hemianopia 3
 //  4 Facial palsy: normal 0 / minor 1 / partial 2 / complete 3
 //  5a/5b Motor arm: 0/1/2/3/4, amputation 0 (untestable → not scored)
 //  6a/6b Motor leg: 0/1/2/3/4, amputation 0
@@ -55,7 +55,7 @@ describe('NIHSS worked examples', () => {
       locQuestions: 'neither_correct', // 2
       locCommands: 'neither_correct', // 2
       bestGaze: 'forced_deviation', // 2
-      visual: 'complete_hemianopia', // 3
+      visual: 'bilateral_hemianopia', // 3 (blindness — the true 3-point level)
       facialPalsy: 'complete', // 3
       motorArmLeft: 'no_movement', // 4
       motorArmRight: 'no_movement', // 4
@@ -107,9 +107,12 @@ describe('NIHSS special cases and boundaries', () => {
     expect(r.score).toBe(0);
   });
 
-  it('visual complete_hemianopia scores 3 (skips 2)', () => {
-    const r = run({ ...normal, visual: 'complete_hemianopia' });
-    expect(r.score).toBe(3);
+  it('visual field scoring matches the official 4-level scale', () => {
+    // NIH Stroke Scale Item 3: 0 no loss, 1 partial hemianopia,
+    // 2 complete hemianopia, 3 bilateral hemianopia / blindness.
+    expect(run({ ...normal, visual: 'partial_hemianopia' }).score).toBe(1);
+    expect(run({ ...normal, visual: 'complete_hemianopia' }).score).toBe(2);
+    expect(run({ ...normal, visual: 'bilateral_hemianopia' }).score).toBe(3);
   });
 
   it('facial palsy complete scores 3 and language mute scores 3', () => {
