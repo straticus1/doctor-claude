@@ -1,0 +1,58 @@
+<!--
+  HAND-MADE FIXTURE (not a live capture).
+
+  Why: as of capture (2026-07), the live NCBI Bookshelf article page for a
+  StatPearls chapter (e.g. https://www.ncbi.nlm.nih.gov/books/NBK551501/)
+  renders its body under `.book-part` / `.jig-ncbiinpagenav body-content`
+  containers, whereas parseStatPearlsArticle() targets
+  `.article-content, #article-content, .chapter-content`. The live HTML
+  therefore parses to 0 sections — a real scraper drift that the live smoke
+  suite (scrapers.live.test.ts) is designed to surface.
+
+  This fixture reproduces the DOM shape parseStatPearlsArticle() is written
+  against, so the offline fixture test verifies the parser's extraction logic
+  (title, h2-delimited sections, author/updated metadata, paragraph fallback)
+  deterministically. It is intentionally minimal and representative.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Diabetes - StatPearls - NCBI Bookshelf</title>
+</head>
+<body>
+  <div class="article-details">
+    <h1 class="heading-title">Diabetes Mellitus</h1>
+    <div class="authors contrib-group">Sapra A, Bhandari P.</div>
+    <div class="fm-updated">Last Update: June 21, 2023.</div>
+  </div>
+
+  <div class="article-content">
+    <h2>Continuing Education Activity</h2>
+    <p>Diabetes mellitus is a chronic metabolic disorder characterized by
+       persistent hyperglycemia resulting from defects in insulin secretion,
+       insulin action, or both.</p>
+    <p>This activity reviews the evaluation and management of diabetes mellitus
+       and highlights the role of the interprofessional team.</p>
+
+    <h2>Introduction</h2>
+    <p>According to the World Health Organization, diabetes mellitus affects
+       hundreds of millions of people worldwide and its prevalence continues to
+       rise.</p>
+
+    <h2>Etiology</h2>
+    <p>Type 1 diabetes mellitus results from autoimmune destruction of the
+       insulin-producing beta cells of the pancreas.</p>
+    <p>Type 2 diabetes mellitus is characterized by insulin resistance combined
+       with a relative insulin secretory defect.</p>
+
+    <h3>Risk Factors</h3>
+    <p>Obesity, physical inactivity, family history, and advancing age are
+       established risk factors for type 2 diabetes mellitus.</p>
+
+    <h2>Pathophysiology</h2>
+    <p>Chronic hyperglycemia leads to microvascular and macrovascular
+       complications affecting the eyes, kidneys, nerves, and cardiovascular
+       system.</p>
+  </div>
+</body>
+</html>
