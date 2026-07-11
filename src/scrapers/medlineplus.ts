@@ -24,6 +24,14 @@ export async function searchMedlinePlus(query: string): Promise<MedlinePlusSearc
 
   const response = await fetch(searchUrl);
   const html = await response.text();
+  return parseMedlinePlusSearch(html);
+}
+
+/**
+ * Parse MedlinePlus search-results HTML into structured results.
+ * Pure function of the HTML — no network access — so it can be tested against fixtures.
+ */
+export function parseMedlinePlusSearch(html: string): MedlinePlusSearchResult[] {
   const $ = cheerio.load(html);
 
   const results: MedlinePlusSearchResult[] = [];
@@ -80,6 +88,14 @@ export async function searchMedlinePlus(query: string): Promise<MedlinePlusSearc
 export async function fetchMedlinePlusArticle(url: string): Promise<MedlinePlusArticle> {
   const response = await fetch(url);
   const html = await response.text();
+  return parseMedlinePlusArticle(html, url);
+}
+
+/**
+ * Parse a MedlinePlus article HTML into structured sections.
+ * Pure function of the HTML and its source URL — no network access.
+ */
+export function parseMedlinePlusArticle(html: string, url: string): MedlinePlusArticle {
   const $ = cheerio.load(html);
 
   // Get title

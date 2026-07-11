@@ -29,6 +29,14 @@ export async function searchStatPearls(query: string): Promise<StatPearlsSearchR
 
   const response = await fetch(searchUrl);
   const html = await response.text();
+  return parseStatPearlsSearch(html);
+}
+
+/**
+ * Parse StatPearls (NCBI book) search-results HTML into structured results.
+ * Pure function of the HTML — no network access — so it can be tested against fixtures.
+ */
+export function parseStatPearlsSearch(html: string): StatPearlsSearchResult[] {
   const $ = cheerio.load(html);
 
   const results: StatPearlsSearchResult[] = [];
@@ -67,6 +75,14 @@ export async function searchStatPearls(query: string): Promise<StatPearlsSearchR
 export async function fetchStatPearlsArticle(url: string): Promise<StatPearlsArticle> {
   const response = await fetch(url);
   const html = await response.text();
+  return parseStatPearlsArticle(html, url);
+}
+
+/**
+ * Parse a StatPearls article HTML into structured sections.
+ * Pure function of the HTML and its source URL — no network access.
+ */
+export function parseStatPearlsArticle(html: string, url: string): StatPearlsArticle {
   const $ = cheerio.load(html);
 
   // Get title
