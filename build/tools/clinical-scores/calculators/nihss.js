@@ -29,7 +29,8 @@ export function calculateNIHSS(inputs) {
     const visualScores = {
         no_loss: 0,
         partial_hemianopia: 1,
-        complete_hemianopia: 3,
+        complete_hemianopia: 2,
+        bilateral_hemianopia: 3,
     };
     score += visualScores[inputs.visual];
     details.push(`Visual Fields: ${formatEnumLabel(inputs.visual)} = ${visualScores[inputs.visual]}`);

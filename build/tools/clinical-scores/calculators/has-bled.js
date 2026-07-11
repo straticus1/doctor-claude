@@ -27,9 +27,9 @@ export function calculateHASBLED(inputs) {
         score += 1;
         details.push('Labile INR (unstable/high INRs, time in therapeutic range <60%): +1');
     }
-    if (inputs.age >= HAS_BLED_AGE_THRESHOLD) {
+    if (inputs.age > HAS_BLED_AGE_THRESHOLD) {
         score += 1;
-        details.push(`Age ≥${HAS_BLED_AGE_THRESHOLD} years: +1`);
+        details.push(`Age >${HAS_BLED_AGE_THRESHOLD} years: +1`);
     }
     if (inputs.medications) {
         score += 1;

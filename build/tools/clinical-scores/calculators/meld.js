@@ -11,8 +11,7 @@ export function calculateMELD(inputs) {
         MELD_INR_COEFFICIENT * Math.log(inr) +
         MELD_CREATININE_COEFFICIENT * Math.log(creatinine) +
         MELD_CONSTANT;
-    let score = Math.round(rawScore * 10) / 10;
-    score = Math.round(score);
+    let score = Math.round(rawScore);
     score = Math.max(MELD_MIN_SCORE, Math.min(score, MELD_MAX_SCORE));
     const details = [];
     details.push(`Bilirubin: ${inputs.bilirubin.toFixed(1)} mg/dL (used: ${bilirubin.toFixed(1)})`);

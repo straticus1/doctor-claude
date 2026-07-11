@@ -45,7 +45,7 @@ export declare const CLINICAL_GUIDANCE: {
             readonly recommendation: "D-dimer testing recommended. If D-dimer is negative, PE is effectively ruled out. If positive, proceed to CT pulmonary angiography (CTPA).";
         };
     }, {
-        readonly threshold: 7;
+        readonly threshold: 6.5;
         readonly guidance: {
             readonly riskCategory: "Moderate Probability";
             readonly interpretation: "Moderate probability of PE (~20-30%)";

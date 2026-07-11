@@ -296,7 +296,7 @@ export declare const NIHSSInputSchema: z.ZodObject<{
     locQuestions: z.ZodEnum<["both_correct", "one_correct", "neither_correct"]>;
     locCommands: z.ZodEnum<["both_correct", "one_correct", "neither_correct"]>;
     bestGaze: z.ZodEnum<["normal", "partial_palsy", "forced_deviation"]>;
-    visual: z.ZodEnum<["no_loss", "partial_hemianopia", "complete_hemianopia"]>;
+    visual: z.ZodEnum<["no_loss", "partial_hemianopia", "complete_hemianopia", "bilateral_hemianopia"]>;
     facialPalsy: z.ZodEnum<["normal", "minor", "partial", "complete"]>;
     motorArmLeft: z.ZodEnum<["no_drift", "drift", "some_effort", "no_effort", "no_movement", "amputation"]>;
     motorArmRight: z.ZodEnum<["no_drift", "drift", "some_effort", "no_effort", "no_movement", "amputation"]>;
@@ -312,7 +312,7 @@ export declare const NIHSSInputSchema: z.ZodObject<{
     locQuestions: "both_correct" | "one_correct" | "neither_correct";
     locCommands: "both_correct" | "one_correct" | "neither_correct";
     bestGaze: "normal" | "partial_palsy" | "forced_deviation";
-    visual: "no_loss" | "partial_hemianopia" | "complete_hemianopia";
+    visual: "no_loss" | "partial_hemianopia" | "complete_hemianopia" | "bilateral_hemianopia";
     facialPalsy: "normal" | "minor" | "partial" | "complete";
     motorArmLeft: "no_drift" | "drift" | "some_effort" | "no_effort" | "no_movement" | "amputation";
     motorArmRight: "no_drift" | "drift" | "some_effort" | "no_effort" | "no_movement" | "amputation";
@@ -328,7 +328,7 @@ export declare const NIHSSInputSchema: z.ZodObject<{
     locQuestions: "both_correct" | "one_correct" | "neither_correct";
     locCommands: "both_correct" | "one_correct" | "neither_correct";
     bestGaze: "normal" | "partial_palsy" | "forced_deviation";
-    visual: "no_loss" | "partial_hemianopia" | "complete_hemianopia";
+    visual: "no_loss" | "partial_hemianopia" | "complete_hemianopia" | "bilateral_hemianopia";
     facialPalsy: "normal" | "minor" | "partial" | "complete";
     motorArmLeft: "no_drift" | "drift" | "some_effort" | "no_effort" | "no_movement" | "amputation";
     motorArmRight: "no_drift" | "drift" | "some_effort" | "no_effort" | "no_movement" | "amputation";
@@ -347,7 +347,7 @@ export declare const SOFAInputSchema: z.ZodObject<{
     platelets: z.ZodNumber;
     bilirubin: z.ZodNumber;
     meanArterialPressure: z.ZodOptional<z.ZodNumber>;
-    vasopressors: z.ZodEnum<["none", "dopamine_low", "dopamine_medium", "dopamine_high_epi_norepi"]>;
+    vasopressors: z.ZodEnum<["none", "dopamine_low", "dopamine_medium_or_epi_norepi_low", "dopamine_high_or_epi_norepi_high"]>;
     glasgowComaScale: z.ZodNumber;
     creatinine: z.ZodNumber;
     urineOutput: z.ZodOptional<z.ZodNumber>;
@@ -355,7 +355,7 @@ export declare const SOFAInputSchema: z.ZodObject<{
     mechanicalVentilation: boolean;
     platelets: number;
     bilirubin: number;
-    vasopressors: "none" | "dopamine_low" | "dopamine_medium" | "dopamine_high_epi_norepi";
+    vasopressors: "none" | "dopamine_low" | "dopamine_medium_or_epi_norepi_low" | "dopamine_high_or_epi_norepi_high";
     glasgowComaScale: number;
     creatinine: number;
     pao2?: number | undefined;
@@ -366,7 +366,7 @@ export declare const SOFAInputSchema: z.ZodObject<{
     mechanicalVentilation: boolean;
     platelets: number;
     bilirubin: number;
-    vasopressors: "none" | "dopamine_low" | "dopamine_medium" | "dopamine_high_epi_norepi";
+    vasopressors: "none" | "dopamine_low" | "dopamine_medium_or_epi_norepi_low" | "dopamine_high_or_epi_norepi_high";
     glasgowComaScale: number;
     creatinine: number;
     pao2?: number | undefined;
@@ -850,7 +850,7 @@ export declare const CalculateClinicalScoreSchema: z.ZodObject<{
         locQuestions: z.ZodEnum<["both_correct", "one_correct", "neither_correct"]>;
         locCommands: z.ZodEnum<["both_correct", "one_correct", "neither_correct"]>;
         bestGaze: z.ZodEnum<["normal", "partial_palsy", "forced_deviation"]>;
-        visual: z.ZodEnum<["no_loss", "partial_hemianopia", "complete_hemianopia"]>;
+        visual: z.ZodEnum<["no_loss", "partial_hemianopia", "complete_hemianopia", "bilateral_hemianopia"]>;
         facialPalsy: z.ZodEnum<["normal", "minor", "partial", "complete"]>;
         motorArmLeft: z.ZodEnum<["no_drift", "drift", "some_effort", "no_effort", "no_movement", "amputation"]>;
         motorArmRight: z.ZodEnum<["no_drift", "drift", "some_effort", "no_effort", "no_movement", "amputation"]>;
@@ -866,7 +866,7 @@ export declare const CalculateClinicalScoreSchema: z.ZodObject<{
         locQuestions: "both_correct" | "one_correct" | "neither_correct";
         locCommands: "both_correct" | "one_correct" | "neither_correct";
         bestGaze: "normal" | "partial_palsy" | "forced_deviation";
-        visual: "no_loss" | "partial_hemianopia" | "complete_hemianopia";
+        visual: "no_loss" | "partial_hemianopia" | "complete_hemianopia" | "bilateral_hemianopia";
         facialPalsy: "normal" | "minor" | "partial" | "complete";
         motorArmLeft: "no_drift" | "drift" | "some_effort" | "no_effort" | "no_movement" | "amputation";
         motorArmRight: "no_drift" | "drift" | "some_effort" | "no_effort" | "no_movement" | "amputation";
@@ -882,7 +882,7 @@ export declare const CalculateClinicalScoreSchema: z.ZodObject<{
         locQuestions: "both_correct" | "one_correct" | "neither_correct";
         locCommands: "both_correct" | "one_correct" | "neither_correct";
         bestGaze: "normal" | "partial_palsy" | "forced_deviation";
-        visual: "no_loss" | "partial_hemianopia" | "complete_hemianopia";
+        visual: "no_loss" | "partial_hemianopia" | "complete_hemianopia" | "bilateral_hemianopia";
         facialPalsy: "normal" | "minor" | "partial" | "complete";
         motorArmLeft: "no_drift" | "drift" | "some_effort" | "no_effort" | "no_movement" | "amputation";
         motorArmRight: "no_drift" | "drift" | "some_effort" | "no_effort" | "no_movement" | "amputation";
@@ -900,7 +900,7 @@ export declare const CalculateClinicalScoreSchema: z.ZodObject<{
         platelets: z.ZodNumber;
         bilirubin: z.ZodNumber;
         meanArterialPressure: z.ZodOptional<z.ZodNumber>;
-        vasopressors: z.ZodEnum<["none", "dopamine_low", "dopamine_medium", "dopamine_high_epi_norepi"]>;
+        vasopressors: z.ZodEnum<["none", "dopamine_low", "dopamine_medium_or_epi_norepi_low", "dopamine_high_or_epi_norepi_high"]>;
         glasgowComaScale: z.ZodNumber;
         creatinine: z.ZodNumber;
         urineOutput: z.ZodOptional<z.ZodNumber>;
@@ -908,7 +908,7 @@ export declare const CalculateClinicalScoreSchema: z.ZodObject<{
         mechanicalVentilation: boolean;
         platelets: number;
         bilirubin: number;
-        vasopressors: "none" | "dopamine_low" | "dopamine_medium" | "dopamine_high_epi_norepi";
+        vasopressors: "none" | "dopamine_low" | "dopamine_medium_or_epi_norepi_low" | "dopamine_high_or_epi_norepi_high";
         glasgowComaScale: number;
         creatinine: number;
         pao2?: number | undefined;
@@ -919,7 +919,7 @@ export declare const CalculateClinicalScoreSchema: z.ZodObject<{
         mechanicalVentilation: boolean;
         platelets: number;
         bilirubin: number;
-        vasopressors: "none" | "dopamine_low" | "dopamine_medium" | "dopamine_high_epi_norepi";
+        vasopressors: "none" | "dopamine_low" | "dopamine_medium_or_epi_norepi_low" | "dopamine_high_or_epi_norepi_high";
         glasgowComaScale: number;
         creatinine: number;
         pao2?: number | undefined;
@@ -1192,7 +1192,7 @@ export declare const CalculateClinicalScoreSchema: z.ZodObject<{
         locQuestions: "both_correct" | "one_correct" | "neither_correct";
         locCommands: "both_correct" | "one_correct" | "neither_correct";
         bestGaze: "normal" | "partial_palsy" | "forced_deviation";
-        visual: "no_loss" | "partial_hemianopia" | "complete_hemianopia";
+        visual: "no_loss" | "partial_hemianopia" | "complete_hemianopia" | "bilateral_hemianopia";
         facialPalsy: "normal" | "minor" | "partial" | "complete";
         motorArmLeft: "no_drift" | "drift" | "some_effort" | "no_effort" | "no_movement" | "amputation";
         motorArmRight: "no_drift" | "drift" | "some_effort" | "no_effort" | "no_movement" | "amputation";
@@ -1207,7 +1207,7 @@ export declare const CalculateClinicalScoreSchema: z.ZodObject<{
         mechanicalVentilation: boolean;
         platelets: number;
         bilirubin: number;
-        vasopressors: "none" | "dopamine_low" | "dopamine_medium" | "dopamine_high_epi_norepi";
+        vasopressors: "none" | "dopamine_low" | "dopamine_medium_or_epi_norepi_low" | "dopamine_high_or_epi_norepi_high";
         glasgowComaScale: number;
         creatinine: number;
         pao2?: number | undefined;
@@ -1358,7 +1358,7 @@ export declare const CalculateClinicalScoreSchema: z.ZodObject<{
         locQuestions: "both_correct" | "one_correct" | "neither_correct";
         locCommands: "both_correct" | "one_correct" | "neither_correct";
         bestGaze: "normal" | "partial_palsy" | "forced_deviation";
-        visual: "no_loss" | "partial_hemianopia" | "complete_hemianopia";
+        visual: "no_loss" | "partial_hemianopia" | "complete_hemianopia" | "bilateral_hemianopia";
         facialPalsy: "normal" | "minor" | "partial" | "complete";
         motorArmLeft: "no_drift" | "drift" | "some_effort" | "no_effort" | "no_movement" | "amputation";
         motorArmRight: "no_drift" | "drift" | "some_effort" | "no_effort" | "no_movement" | "amputation";
@@ -1373,7 +1373,7 @@ export declare const CalculateClinicalScoreSchema: z.ZodObject<{
         mechanicalVentilation: boolean;
         platelets: number;
         bilirubin: number;
-        vasopressors: "none" | "dopamine_low" | "dopamine_medium" | "dopamine_high_epi_norepi";
+        vasopressors: "none" | "dopamine_low" | "dopamine_medium_or_epi_norepi_low" | "dopamine_high_or_epi_norepi_high";
         glasgowComaScale: number;
         creatinine: number;
         pao2?: number | undefined;

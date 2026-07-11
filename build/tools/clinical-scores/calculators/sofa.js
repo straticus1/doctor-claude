@@ -7,13 +7,13 @@ export function calculateSOFA(inputs) {
     if (inputs.pao2 !== undefined && inputs.fio2 !== undefined) {
         const fio2Normalized = normalizeFiO2(inputs.fio2);
         const pao2Fio2Ratio = inputs.pao2 / fio2Normalized;
-        if (pao2Fio2Ratio < SOFA_PAO2_FIO2_THRESHOLD_CRITICAL) {
+        if (pao2Fio2Ratio < SOFA_PAO2_FIO2_THRESHOLD_CRITICAL && inputs.mechanicalVentilation) {
             respirationScore = 4;
             details.push(`Respiration: PaO2/FiO2 <${SOFA_PAO2_FIO2_THRESHOLD_CRITICAL} with mechanical ventilation = 4`);
         }
-        else if (pao2Fio2Ratio < SOFA_PAO2_FIO2_THRESHOLD_SEVERE) {
-            respirationScore = inputs.mechanicalVentilation ? 3 : 2;
-            details.push(`Respiration: PaO2/FiO2 <${SOFA_PAO2_FIO2_THRESHOLD_SEVERE} ${inputs.mechanicalVentilation ? 'with' : 'without'} mechanical ventilation = ${respirationScore}`);
+        else if (pao2Fio2Ratio < SOFA_PAO2_FIO2_THRESHOLD_SEVERE && inputs.mechanicalVentilation) {
+            respirationScore = 3;
+            details.push(`Respiration: PaO2/FiO2 <${SOFA_PAO2_FIO2_THRESHOLD_SEVERE} with mechanical ventilation = 3`);
         }
         else if (pao2Fio2Ratio < SOFA_PAO2_FIO2_THRESHOLD_MODERATE) {
             respirationScore = 2;
@@ -74,13 +74,13 @@ export function calculateSOFA(inputs) {
     }
     score += liverScore;
     let cardiovascularScore = 0;
-    if (inputs.vasopressors === 'dopamine_high_epi_norepi') {
+    if (inputs.vasopressors === 'dopamine_high_or_epi_norepi_high') {
         cardiovascularScore = 4;
-        details.push(`Cardiovascular: Dopamine >15 or epinephrine/norepinephrine any dose = 4`);
+        details.push(`Cardiovascular: Dopamine >15, or epinephrine >0.1, or norepinephrine >0.1 μg/kg/min = 4`);
     }
-    else if (inputs.vasopressors === 'dopamine_medium') {
+    else if (inputs.vasopressors === 'dopamine_medium_or_epi_norepi_low') {
         cardiovascularScore = 3;
-        details.push(`Cardiovascular: Dopamine >5-15 μg/kg/min = 3`);
+        details.push(`Cardiovascular: Dopamine >5-15, or epinephrine ≤0.1, or norepinephrine ≤0.1 μg/kg/min = 3`);
     }
     else if (inputs.vasopressors === 'dopamine_low') {
         cardiovascularScore = 2;
