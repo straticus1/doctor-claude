@@ -45,7 +45,11 @@ export function calculateCentor(inputs: z.infer<typeof CentorInputSchema>): Scor
   }
 
   const maxScore = 4;
-  const adjustedScore = Math.max(0, score);
+  // The Modified Centor (McIsaac) score ranges from -1 to 5: a patient with no
+  // clinical criteria and age >=45 scores -1. Do NOT clamp to 0 — the risk
+  // guidance deliberately branches on `score <= 0`, and clamping would collapse
+  // the very-low-risk -1 case into 0.
+  const adjustedScore = score;
 
   const { riskCategory, interpretation, recommendation } = getRiskGuidance('centor', adjustedScore);
 
