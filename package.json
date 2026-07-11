@@ -10,7 +10,10 @@
     "build": "tsc",
     "prepare": "npm run build",
     "watch": "tsc --watch",
-    "inspector": "npx @modelcontextprotocol/inspector node build/index.js"
+    "inspector": "npx @modelcontextprotocol/inspector node build/index.js",
+    "test": "vitest run --exclude '**/*.live.test.ts'",
+    "test:watch": "vitest --exclude '**/*.live.test.ts'",
+    "test:live": "vitest run src/**/*.live.test.ts"
   },
   "keywords": [
     "mcp",
@@ -28,6 +31,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.10.5",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "vitest": "^4.1.10"
   }
 }
